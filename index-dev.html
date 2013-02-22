@@ -1,0 +1,241 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Mapsplit test</title>
+<!--
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+-->
+
+    <link rel="stylesheet" href="http://www.openlayers.org/dev/theme/default/style.css" type="text/css" />
+    <style type="text/css">
+      body {
+          margin: 0;
+          background-color: #f1eee8;
+      }
+      #map {
+          width: 100%;
+          height: 100%;
+      }
+
+      #info {
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        background-color: rgba(225, 225, 225, 0.7); 
+        padding: 5px;
+        z-index:9999;
+      }
+      .olLayerViewGridTile {
+        height:100%; 
+        width:100%; 
+        border:1px solid black;
+      }      
+    </style>
+    <script src="http://www.openlayers.org/dev/OpenLayers.js"></script>
+    <script src="../olex/js/Grid.js"></script>
+    <!--
+    <script src="../../OpenLayersApps/libext/ViewGrid.js"></script>
+    <script src="../../OpenLayersApps/libext/ViewGrid.2.js"></script>
+    <script src="../../OpenLayersApps/lib/timer.js"></script>
+    -->
+    <script src="../pbf-js/pbf-browser.js"></script>
+    <script src="../pbf-js/protobuf.js"></script>
+    <script src="../pbf-js/pbf.js"></script>
+    <script src="../pbf-js/lib/zlib.js"></script>
+    <script src="../olex/js/PBF.js"></script>
+    
+    <script type="text/javascript">
+        var lat=47.722302000;
+        var lon=9.385398000;
+        var zoom=13;
+        var map;
+        var points;
+        var renderers = ["SVGX"]; // Canvas SVG
+
+        var getFeatureInfoHtml = function(feature) {
+            var tags = feature.attributes;
+            var infoHtml = "<table>";
+            for (var key in tags) {
+               infoHtml += "<tr><td>" + key + "</td><td>" + tags[key] + "</td></tr>";
+            }
+            infoHtml += "</table>";
+            return infoHtml;
+        }
+
+        function onFeatureSelect(feature)
+        {
+            document.getElementById("info").innerHTML = getFeatureInfoHtml(feature);
+        }
+
+        function onFeatureUnselect(feature) {
+            document.getElementById("info").innerHTML = "";
+        }       
+
+        /* TODO HTML5 Popup? (dieser zu langsam, verschiebt Karte)
+        var selectControl;
+        var selectedFeature;
+        function onPopupClose(evt) {
+            selectControl.unselect(selectedFeature);
+        }
+        function onFeatureSelect(feature) {
+            selectedFeature = feature;
+            var infoHtml = getFeatureInfoHtml(feature);
+            popup = new OpenLayers.Popup.FramedCloud("chicken", 
+                                     feature.geometry.getBounds().getCenterLonLat(),
+                                     null,
+                                     infoHtml,
+                                     null, true, onPopupClose);
+            feature.popup = popup;
+            map.addPopup(popup);
+        }
+        function onFeatureUnselect(feature) {
+            map.removePopup(feature.popup);
+            feature.popup.destroy();
+            feature.popup = null;
+        }    
+        */
+
+        OpenLayers.Renderer.SVGX = OpenLayers.Class(OpenLayers.Renderer.SVG, {
+
+            initialize: function(options) {
+                OpenLayers.Renderer.SVG.prototype.initialize.apply(this, [options]);
+            },
+
+            setStyle: function(node, style, options) {
+                var node = OpenLayers.Renderer.SVG.prototype.setStyle.apply(this, [node, style, options]);
+                if (style.visibility) {
+                    node.style.visibility = style.visibility;
+                }
+                return node;
+            },
+
+            CLASS_NAME: "OpenLayers.Renderer.SVGX" 
+        });     
+        
+        function init(){
+            var options = {
+                controls: [],
+                projection: "EPSG:900913",
+                displayProjection: "EPSG:4326"
+            };
+
+            map = new OpenLayers.Map('map', options);
+
+            map.addControl(new OpenLayers.Control.Attribution());
+            map.addControl(new OpenLayers.Control.LayerSwitcher());
+            map.addControl(new OpenLayers.Control.Navigation());
+            map.addControl(new OpenLayers.Control.PanZoomBar());
+
+            map.addLayer(new OpenLayers.Layer.OSM(null, null, {opacity: 0.5}));
+
+            // transparent layer (~ no base layer)
+            map.addLayer(new OpenLayers.Layer("Leer", {isBaseLayer: true}));
+
+            /*
+            var gsat = new OpenLayers.Layer.Google("Google Satellite", {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22});
+            map.addLayers([gsat]);
+            */
+
+            var displayNoneStyle = new OpenLayers.Style({
+                visibility: 'hidden'
+            });
+            var defaultBlueStyle = new OpenLayers.Style({
+                strokeColor: "blue",
+                strokeWidth: 2,
+                strokeOpacity: 0.5,
+                pointRadius: 8,
+                fillColor: "blue",
+                fillOpacity: 0.2,
+                visibility: 'hidden',
+                pointerEvents: 'painted'
+            });
+            var myStyles = new OpenLayers.StyleMap({
+                "default": defaultBlueStyle, 
+				//"default": displayNoneStyle,
+                "select": new OpenLayers.Style({
+                    strokeColor: "red",
+                    strokeWidth: 2,
+                    strokeOpacity: 0.8,
+                    pointRadius: 8,
+                    fillColor: "red",
+                    fillOpacity: 0.2,
+                    visibility: 'visible'
+                })
+            });
+
+           var tile = new OpenLayers.Layer.Vector("single tile", {
+                projection: map.displayProjection,
+                strategies: [new OpenLayers.Strategy.Fixed()],
+                protocol: new OpenLayers.Protocol.HTTP({
+                    // 13 / 4309 / 2857
+                    // 4309_2857.osm 
+                    url: "tiles/4309_2857.osm",
+                    format: new OpenLayers.Format.OSM()
+                    //url: "tiles/4310_2856.pbf",
+                    //url: "tiles/4304_2858.pbf",
+                    //format: new OpenLayers.Format.PBF() //{internalProjection: map.getProjectionObject()})
+                }),
+                visibility: false,
+                styleMap: myStyles,
+                renderers: renderers
+            });
+           map.addLayer(tile);
+
+           var vector = new OpenLayers.Layer.Vector("tiles", {
+                // setting layer projection does not work with Grid.js (wrong x/y calculation)
+                //projection: map.displayProjection,
+                strategies: [new OpenLayers.Strategy.Grid()],
+                protocol: new OpenLayers.Protocol.HTTP({
+                    // 13 / 4309 / 2857 = 4309_2857.pbf
+                    url: "tiles/${x}_${y}.pbf",
+                    format: new OpenLayers.Format.PBF({internalProjection: map.getProjectionObject()})
+                }),
+                visibility: true,
+                styleMap: myStyles,
+                renderers: renderers
+            });
+            
+            vector.events.register("loadend", vector,
+              function() {
+                console.log('loadend');
+                for(var i=0, len=this.features.length; i<len; ++i) {
+                    if(this.features[i]['osm_id'] == 29091169) {
+                        var feature = this.features[i];
+                        console.log('feature: ' + feature.id + ', ' + feature);
+                    }
+                }
+             }
+            );
+           map.addLayer(vector);
+           // hover only: hide features, render only on select 
+           // works in Chrome, not in Firefox?
+           //vector.renderer.rendererRoot.style.visibility = 'hidden';
+           
+           var options = { hover: true, onSelect: onFeatureSelect, onUnselect: onFeatureUnselect };
+           selectControl = new OpenLayers.Control.SelectFeature(vector, options);
+           map.addControl(selectControl);
+           selectControl.activate();
+
+           // shows tile grid lines and tile number (by Jochen Topf, http://trac.osgeo.org/openlayers/ticket/2352)
+           /*
+           var grid = new OpenLayers.Layer.ViewGrid("tile grid", { visibility: true });
+           map.addLayer(grid);
+           */
+
+           map.setCenter(
+               new OpenLayers.LonLat(lon, lat).transform(
+                   new OpenLayers.Projection("EPSG:4326"),
+                   map.getProjectionObject()
+               ), zoom
+           );                
+       }
+
+
+
+    </script>
+  </head>
+  <body onload="init()">
+    <div id="map"></div>
+    <span id="info" \>
+  </body>
+</html>
