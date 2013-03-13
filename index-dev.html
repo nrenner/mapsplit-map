@@ -12,15 +12,6 @@
           width: 100%;
           height: 100%;
       }
-
-      #info {
-        position: absolute;
-        right: 20px;
-        top: 10px;
-        background-color: rgba(225, 225, 225, 0.7); 
-        padding: 5px;
-        z-index:9999;
-      }
     </style>
     <script src="http://www.openlayers.org/dev/OpenLayers.js"></script>
     <script src="../olex/js/Grid.js"></script>
@@ -29,6 +20,8 @@
     <script src="../pbf-js/pbf.js"></script>
     <script src="../pbf-js/lib/zlib.js"></script>
     <script src="../olex/js/PBF.js"></script>
+
+    <script src="lib/FeaturePopups.js"></script>
     
     <script type="text/javascript">
         var lat=47.722302000;
@@ -47,15 +40,6 @@
             infoHtml += "</table>";
             return infoHtml;
         }
-
-        function onFeatureSelect(feature)
-        {
-            document.getElementById("info").innerHTML = getFeatureInfoHtml(feature);
-        }
-
-        function onFeatureUnselect(feature) {
-            document.getElementById("info").innerHTML = "";
-        }       
 
         OpenLayers.Renderer.SVGX = OpenLayers.Class(OpenLayers.Renderer.SVG, {
 
@@ -147,10 +131,14 @@
            // works in Chrome, not in Firefox?
            //vector.renderer.rendererRoot.style.visibility = 'hidden';
            
-           var options = { hover: true, onSelect: onFeatureSelect, onUnselect: onFeatureUnselect };
-           selectControl = new OpenLayers.Control.SelectFeature(vector, options);
-           map.addControl(selectControl);
-           selectControl.activate();
+           var fpControl = new OpenLayers.Control.FeaturePopups();
+           fpControl.addLayer(vector, {
+               templates: {
+                   hover: getFeatureInfoHtml,
+                   single: getFeatureInfoHtml
+               }
+           });
+           map.addControl(fpControl);
 
            map.setCenter(
                new OpenLayers.LonLat(lon, lat).transform(
@@ -166,6 +154,5 @@
   </head>
   <body onload="init()">
     <div id="map"></div>
-    <span id="info" \>
   </body>
 </html>
