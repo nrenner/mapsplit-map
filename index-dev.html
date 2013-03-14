@@ -58,21 +58,55 @@
             CLASS_NAME: "OpenLayers.Renderer.SVGX" 
         });     
         
+        function initFeaturePopupsControl(layer) {
+            var fpControl = new OpenLayers.Control.FeaturePopups({
+                popupSingleOptions: {
+                    popupClass: OpenLayers.Popup.Anchored,
+                    panMapIfOutOfView: false
+                },
+                popupHoverOptions: {
+                    followCursor: false
+                },
+                selectOptions: {
+                    clickout: true
+                }
+            });
+
+            // allow map panning while feature hovered or selected
+            fpControl.controls.hover.handlers.feature.stopDown = false;
+            fpControl.controls.select.handlers.feature.stopDown = false;
+
+            fpControl.addLayer(layer, {
+                templates: {
+                    hover: getFeatureInfoHtml,
+                    single: getFeatureInfoHtml
+                }
+            });
+            map.addControl(fpControl);
+        }
+
         function init() {
             var options = {
                 controls: [],
                 projection: "EPSG:900913",
-                displayProjection: "EPSG:4326"
+                displayProjection: "EPSG:4326",
+                /* turn off animated zooming, slow on my old machine */
+                zoomMethod: null
             };
 
             map = new OpenLayers.Map('map', options);
 
             map.addControl(new OpenLayers.Control.Attribution());
             //map.addControl(new OpenLayers.Control.LayerSwitcher());
-            map.addControl(new OpenLayers.Control.Navigation());
+            map.addControl(new OpenLayers.Control.Navigation(
+                {dragPanOptions: {enableKinetic: false}}
+            ));
             map.addControl(new OpenLayers.Control.PanZoomBar());
 
-            map.addLayer(new OpenLayers.Layer.OSM(null, null, {opacity: 0.5}));
+            map.addLayer(new OpenLayers.Layer.OSM(null, null, {
+                //opacity: 0.5,
+                transitionEffect: null
+            }));
 
             // transparent layer (~ no base layer)
             //map.addLayer(new OpenLayers.Layer("Leer", {isBaseLayer: true}));
@@ -126,19 +160,12 @@
              }
             );
            map.addLayer(vector);
+           
+           initFeaturePopupsControl(vector);
 
            // hover only: hide features, render only on select 
            // works in Chrome, not in Firefox?
            //vector.renderer.rendererRoot.style.visibility = 'hidden';
-           
-           var fpControl = new OpenLayers.Control.FeaturePopups();
-           fpControl.addLayer(vector, {
-               templates: {
-                   hover: getFeatureInfoHtml,
-                   single: getFeatureInfoHtml
-               }
-           });
-           map.addControl(fpControl);
 
            map.setCenter(
                new OpenLayers.LonLat(lon, lat).transform(
