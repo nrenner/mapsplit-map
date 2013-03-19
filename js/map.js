@@ -1,11 +1,31 @@
-(function() {
+var mm = (function() {
     var lat=47.722302000;
     var lon=9.385398000;
     var zoom=13;
     var map;
-    var points;
-    var renderers = ["SVGX"]; // Canvas SVG
-    
+    var vector;
+    var renderers = ["SVGX"]; // SVGX Canvas SVG
+
+    /**
+     * Changes the visibility for all features (supporting hover only)
+     * 
+     * @param {string} 'visible' | 'hidden'
+     */
+    var updateVisibility = function(visibility) {
+        if (vector.renderer.vectorRoot) {
+            // Sets the visibility of the SVG vectorRoot (OL group name) element 
+            // (root didn't work, didn't investigate further why). When hidden allows
+            // fast interactivity over a base map with only hovered/selected feature rendered.
+            //
+            // see http://www.w3.org/TR/SVG/painting.html#VisibilityControl
+            // see http://www.w3.org/TR/SVG/interact.html#PointerEventsProperty
+            vector.renderer.vectorRoot.style.visibility = visibility;
+            vector.renderer.vectorRoot.style.pointerEvents = 'painted';
+        } else {
+            console.warn('Could not set visibility for renderer ' + vector.renderer.CLASS_NAME);
+        }
+    };
+
     var getFeatureInfoHtml = function(feature) {
         var tags = feature.attributes;
         var infoHtml = "<table>";
@@ -87,22 +107,17 @@
         // transparent layer (~ no base layer)
         //map.addLayer(new OpenLayers.Layer("Leer", {isBaseLayer: true}));
     
-        var displayNoneStyle = new OpenLayers.Style({
-            visibility: 'hidden'
-        });
-        var defaultBlueStyle = new OpenLayers.Style({
+        var defaultStyle = new OpenLayers.Style({
             strokeColor: "blue",
             strokeWidth: 2,
             strokeOpacity: 0.5,
             pointRadius: 8,
             fillColor: "blue",
             fillOpacity: 0.2,
-            visibility: 'hidden',
-            pointerEvents: 'painted'
+            visibility: 'inherit'
         });
         var myStyles = new OpenLayers.StyleMap({
-            "default": defaultBlueStyle, 
-            //"default": displayNoneStyle,
+            "default": defaultStyle, 
             "select": new OpenLayers.Style({
                 strokeColor: "red",
                 strokeWidth: 2,
@@ -116,7 +131,7 @@
     
        var grid = new OpenLayers.Strategy.Grid();
        grid.buffer = 0;
-       var vector = new OpenLayers.Layer.Vector("tiles", {
+       vector = new OpenLayers.Layer.Vector("tiles", {
             // setting layer projection does not work with Grid.js (wrong x/y calculation)
             //projection: map.displayProjection,
             strategies: [grid],
@@ -138,11 +153,7 @@
        map.addLayer(vector);
        
        initFeaturePopupsControl(vector);
-    
-       // hover only: hide features, render only on select 
-       // works in Chrome, not in Firefox?
-       //vector.renderer.rendererRoot.style.visibility = 'hidden';
-    
+
        if (!map.getCenter()) {
            map.setCenter(
                new OpenLayers.LonLat(lon, lat).transform(
@@ -154,4 +165,8 @@
     }
 
     init();
+    
+    return {
+        updateVisibility: updateVisibility
+    };
 })();

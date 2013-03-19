@@ -8,7 +8,17 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="map"></div>
+    <div id="container">
+        <div id="map"></div>
+        <div id="panel">
+            <div class="content">
+                <h3>Mapsplit map</h3>
+                
+                <input type="radio" name="visibility" value="visible" checked>Show vectors<br>
+                <input type="radio" name="visibility" value="hidden">Hover only (hide vectors)
+            </div>
+        </div>
+    </div>
     
     <script src="http://www.openlayers.org/dev/OpenLayers.js"></script>
     <script src="lib/FeaturePopups.js"></script>
@@ -21,5 +31,6 @@
     <script src="../olex/js/PBF.js"></script>
 
     <script src="js/map.js"></script>    
+    <script src="js/app.js"></script>    
 </body>
 </html>
