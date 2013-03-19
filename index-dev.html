@@ -97,6 +97,7 @@
             map = new OpenLayers.Map('map', options);
 
             map.addControl(new OpenLayers.Control.Attribution());
+            map.addControl(new OpenLayers.Control.Permalink());
             //map.addControl(new OpenLayers.Control.LayerSwitcher());
             map.addControl(new OpenLayers.Control.Navigation(
                 {dragPanOptions: {enableKinetic: false}}
@@ -167,12 +168,14 @@
            // works in Chrome, not in Firefox?
            //vector.renderer.rendererRoot.style.visibility = 'hidden';
 
-           map.setCenter(
-               new OpenLayers.LonLat(lon, lat).transform(
-                   new OpenLayers.Projection("EPSG:4326"),
-                   map.getProjectionObject()
-               ), zoom
-           );                
+           if (!map.getCenter()) {
+               map.setCenter(
+                   new OpenLayers.LonLat(lon, lat).transform(
+                       new OpenLayers.Projection("EPSG:4326"),
+                       map.getProjectionObject()
+                   ), zoom
+               );                
+           }
        }
 
 
