@@ -31,3 +31,25 @@ body {
     margin-left: 10px;
     padding: 10px;
 }
+a {
+    color: black;
+}
+
+/* table reset */
+table {
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+table td {
+    padding-left: 5px;
+}
+
+table tr td:first-child {
+    padding-left: 0;
+}
+
+.entity_title {
+    padding-bottom: 3px;
+    font-weight: bold;
+}
