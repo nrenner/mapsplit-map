@@ -1,11 +1,13 @@
 require('osm-pbf-openlayers');
+require('./SVGVisibility.js');
+var popup = require('./popup.js');
     
 var lat=47.722302000;
 var lon=9.385398000;
 var zoom=13;
 var map;
 var vector;
-var renderers = ["SVGX"]; // SVGX Canvas SVG
+var renderers = ["SVGVisibility"]; // SVGVisibility Canvas SVG
 
 /**
  * Changes the visibility for all features (supporting hover only)
@@ -13,76 +15,13 @@ var renderers = ["SVGX"]; // SVGX Canvas SVG
  * @param {string} 'visible' | 'hidden'
  */
 var updateVisibility = function(visibility) {
-    if (vector.renderer.vectorRoot) {
-        // Sets the visibility of the SVG vectorRoot (OL group name) element 
-        // (root didn't work, didn't investigate further why). When hidden allows
-        // fast interactivity over a base map with only hovered/selected feature rendered.
-        //
-        // see http://www.w3.org/TR/SVG/painting.html#VisibilityControl
-        // see http://www.w3.org/TR/SVG/interact.html#PointerEventsProperty
-        vector.renderer.vectorRoot.style.visibility = visibility;
-        vector.renderer.vectorRoot.style.pointerEvents = 'painted';
+    // requires SVGVisibility
+    if (vector.renderer.setVisibility) {
+        vector.renderer.setVisibility(visibility);
     } else {
         console.warn('Could not set visibility for renderer ' + vector.renderer.CLASS_NAME);
     }
 };
-
-var getFeatureInfoHtml = function(feature) {
-    var tags = feature.attributes;
-    var infoHtml = "<table>";
-    var typeId = feature.fid.split('.');
-    var link = '<a href="http://www.openstreetmap.org/browse/' + typeId[0] + '/' + typeId[1] + '" target="_blank">' + typeId[1] + '</a>';
-    infoHtml += "<div class='entity_title'>" + typeId[0] + " " + link + "</div>";
-    for (var key in tags) {
-       infoHtml += "<tr><td>" + key + "</td><td>" + tags[key] + "</td></tr>";
-    }
-    infoHtml += "</table>";
-    return infoHtml;
-};
-
-OpenLayers.Renderer.SVGX = OpenLayers.Class(OpenLayers.Renderer.SVG, {
-
-    initialize: function(options) {
-        OpenLayers.Renderer.SVG.prototype.initialize.apply(this, [options]);
-    },
-
-    setStyle: function(node, style, options) {
-        var node = OpenLayers.Renderer.SVG.prototype.setStyle.apply(this, [node, style, options]);
-        if (style.visibility) {
-            node.style.visibility = style.visibility;
-        }
-        return node;
-    },
-
-    CLASS_NAME: "OpenLayers.Renderer.SVGX" 
-});     
-
-function initFeaturePopupsControl(layer) {
-    var fpControl = new OpenLayers.Control.FeaturePopups({
-        popupSingleOptions: {
-            popupClass: OpenLayers.Popup.Anchored,
-            panMapIfOutOfView: false
-        },
-        popupHoverOptions: {
-            followCursor: false
-        },
-        selectOptions: {
-            clickout: true
-        }
-    });
-
-    // allow map panning while feature hovered or selected
-    fpControl.controls.hover.handlers.feature.stopDown = false;
-    fpControl.controls.select.handlers.feature.stopDown = false;
-
-    fpControl.addLayer(layer, {
-        templates: {
-            hover: getFeatureInfoHtml,
-            single: getFeatureInfoHtml
-        }
-    });
-    map.addControl(fpControl);
-}
 
 function init() {
     var options = {
@@ -156,7 +95,7 @@ function init() {
     );
    map.addLayer(vector);
    
-   initFeaturePopupsControl(vector);
+   map.addControl(popup.createControl(vector));
 
    if (!map.getCenter()) {
        map.setCenter(
