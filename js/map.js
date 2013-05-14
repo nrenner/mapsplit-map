@@ -1,13 +1,9 @@
-require('osm-pbf-openlayers');
-require('./SVGVisibility.js');
+require('osm-pbf-leaflet');
+require('leaflet-tilelayer-vector');
 var popup = require('./popup.js');
     
-var lat=47.722302000;
-var lon=9.385398000;
-var zoom=13;
 var map;
-var vector;
-var renderers = ["SVGVisibility"]; // SVGVisibility Canvas SVG
+var vectorTileLayer;
 
 /**
  * Changes the visibility for all features (supporting hover only)
@@ -15,96 +11,128 @@ var renderers = ["SVGVisibility"]; // SVGVisibility Canvas SVG
  * @param {string} 'visible' | 'hidden'
  */
 var updateVisibility = function(visibility) {
-    // requires SVGVisibility
-    if (vector.renderer.setVisibility) {
-        vector.renderer.setVisibility(visibility);
+    if (map._pathRoot) {
+        // does not work as expected in Chrome (v26): 
+        // when svg root is hidden, setting visible on child has no effect
+        //map._pathRoot.setAttribute('visibility', visibility);
+        var children = map._pathRoot.childNodes;
+        for (var i = 0; i < children.length; i++) {
+            children[i].setAttribute('visibility', visibility);
+        }
+        map._pathRoot.setAttribute('pointer-events', 'painted');
     } else {
-        console.warn('Could not set visibility for renderer ' + vector.renderer.CLASS_NAME);
+        console.warn('Could not set visibility');
     }
 };
 
 function init() {
-    var options = {
-        controls: [],
-        projection: "EPSG:900913",
-        displayProjection: "EPSG:4326",
-        /* turn off animated zooming, slow on my old machine */
-        zoomMethod: null
+
+    map = L.map('map');
+    map.setView([47.7223, 9.3854], 13);
+
+    new L.OSM.Mapnik().addTo(map);
+
+    var pointStyle = {
+        radius: 4,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+    };
+    var lineStyle = {
+        weight: 4,
+        opacity: 0.7
+    };
+    var polygonStyle = {
+        weight: 2,
+        color: "#999",
+        opacity: 1,
+        fillColor: "#B0DE5C",
+        fillOpacity: 0.5
+    };
+    var styles = {
+        node: pointStyle,
+        way: lineStyle,
+        area: polygonStyle
     };
 
-    map = new OpenLayers.Map('map', options);
+    var hoverStyle = {
+        color: 'red',
+        fillColor: 'red' /*,
+        visibility: 'visible' */
+    };
+    var bindHover = function(feature, layer) {
+        layer.on('mouseover', function() {
+            layer.defaultOptions = layer.options; 
+            layer.setStyle(hoverStyle);
+            layer._path.setAttribute('visibility', 'visible');
+        });
+        layer.on('mouseout', function(evt) {
+            // TODO resetStyle for L.OSM.DataLayer? (has styles instead of style)
+            //layer.resetStyle(evt.target);
+            L.Util.extend(layer.options, layer.defaultOptions);
+            layer._updateStyle();
+            layer._path.setAttribute('visibility', 'inherit');
+        });
+    };
 
-    map.addControl(new OpenLayers.Control.Attribution());
-    map.addControl(new OpenLayers.Control.Permalink());
-    //map.addControl(new OpenLayers.Control.LayerSwitcher());
-    map.addControl(new OpenLayers.Control.Navigation(
-        {dragPanOptions: {enableKinetic: false}}
-    ));
-    map.addControl(new OpenLayers.Control.PanZoomBar());
+    var bindPopup = function(feature, layer) {
+            // TODO create content on-demand, not for all features in advance?
+            var popupContent = popup.getFeatureInfoHtml(feature);
+            layer.bindPopup(popupContent, {offset:new L.Point(0,0)});
+    };
 
-    map.addLayer(new OpenLayers.Layer.OSM(null, null, {
-        //opacity: 0.5,
-        transitionEffect: null
-    }));
+    var filter = function(feature) {
+        return !feature.tags.building;
+    };
 
-    // transparent layer (~ no base layer)
-    //map.addLayer(new OpenLayers.Layer("Leer", {isBaseLayer: true}));
+    var vectorOptions = {
+        filter: filter,
+        styles: styles,
+        onEachFeature: function(feature, layer) {
+            bindHover(feature, layer);
+            bindPopup(feature, layer);
+        }
+    };
 
-    var defaultStyle = new OpenLayers.Style({
-        strokeColor: "blue",
-        strokeWidth: 2,
-        strokeOpacity: 0.5,
-        pointRadius: 8,
-        fillColor: "blue",
-        fillOpacity: 0.2,
-        visibility: 'inherit'
-    });
-    var myStyles = new OpenLayers.StyleMap({
-        "default": defaultStyle, 
-        "select": new OpenLayers.Style({
-            strokeColor: "red",
-            strokeWidth: 2,
-            strokeOpacity: 0.8,
-            pointRadius: 8,
-            fillColor: "red",
-            fillOpacity: 0.2,
-            visibility: 'visible'
-        })
-    });
-
-   var grid = new OpenLayers.Strategy.Grid();
-   grid.buffer = 0;
-   vector = new OpenLayers.Layer.Vector("tiles", {
-        // setting layer projection does not work with Grid.js (wrong x/y calculation)
-        //projection: map.displayProjection,
-        strategies: [grid],
-        protocol: new OpenLayers.Protocol.HTTP({
-            // 13 / 4309 / 2857 = 4309_2857.pbf
-            url: "tiles/${x}_${y}.pbf",
-            format: new OpenLayers.Format.PBF({internalProjection: map.getProjectionObject()})
-        }),
-        visibility: true,
-        styleMap: myStyles,
-        renderers: renderers
-    });
+    var tileOptions = {
+        // remove tiles outside viewport
+        unloadInvisibleTiles: true,
+        // no tile loading while panning, too slow with large vector tiles
+        updateWhenIdle: true,
+        // unique feature key function, for filtering duplicate features contained in multiple tiles
+        unique: function(feature) {
+            return feature.type.substr(0,1) + feature.id; 
+        },
+        // factory function for creating the actual vector layer, default is L.geoJson
+        layerFactory: L.osmPbf
+    };
     
-    vector.events.register("loadend", vector,
-      function() {
-        console.log('loadend');
-     }
-    );
-   map.addLayer(vector);
-   
-   map.addControl(popup.createControl(vector));
+    var vectorTileLayer = new L.TileLayer.Vector.Unclipped("tiles/{x}_{y}.pbf", tileOptions, vectorOptions);
+    /*
+    vectorTileLayer.on('load', function() {
+        //console.log('===== loaded ======');
+        var tilesKeys = Object.keys(vectorTileLayer._tiles);
+        console.log('_tiles (' + tilesKeys.length + '): ' + tilesKeys);
+    });
+    map.on('moveend', function() {
+        console.log('----- moveend -----');
+    });
+    */
+    map.addLayer(vectorTileLayer);
 
-   if (!map.getCenter()) {
-       map.setCenter(
-           new OpenLayers.LonLat(lon, lat).transform(
-               new OpenLayers.Projection("EPSG:4326"),
-               map.getProjectionObject()
-           ), zoom
-       );                
-   }
+    // debug layer, from: 
+    // http://blog.mathieu-leplatre.info/leaflet-tiles-in-lambert-93-projection-2154.html
+    var tileDebugLayer = L.tileLayer.canvas();
+    tileDebugLayer.drawTile = function(canvas, tilePoint, zoom) {
+        var ctx = canvas.getContext('2d');
+        ctx.strokeStyle = ctx.fillStyle = "red";
+        ctx.rect(0,0, 256,256);
+        ctx.stroke();
+        ctx.fillText('(' + tilePoint.x + ', ' + tilePoint.y + ')',5,10);
+    };
+    map.addLayer(tileDebugLayer);
 }
 
 init();
