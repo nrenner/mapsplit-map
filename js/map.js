@@ -3,21 +3,33 @@ require('leaflet-tilelayer-vector');
 var popup = require('./popup.js');
     
 var map;
+var baseLayer;
 var vectorTileLayer;
+var tileDebugLayer;
+var visibility = 'visible';
 
 /**
  * Changes the visibility for all features (supporting hover only)
  * 
  * @param {string} 'visible' | 'hidden'
  */
-var updateVisibility = function(visibility) {
+var updateVisibility = function(aVisibility) {
+    visibility = aVisibility;
     if (map._pathRoot) {
+        if (visibility === 'hidden') {
+            map.addLayer(baseLayer, true);
+            map.removeLayer(tileDebugLayer);
+        } else {
+            map.removeLayer(baseLayer);
+            map.addLayer(tileDebugLayer);
+        }
+        
         // does not work as expected in Chrome (v26): 
         // when svg root is hidden, setting visible on child has no effect
         //map._pathRoot.setAttribute('visibility', visibility);
         var children = map._pathRoot.childNodes;
         for (var i = 0; i < children.length; i++) {
-            children[i].setAttribute('visibility', visibility);
+            children[i].setAttribute('visibility', aVisibility);
         }
         map._pathRoot.setAttribute('pointer-events', 'painted');
     } else {
@@ -30,7 +42,7 @@ function init() {
     map = L.map('map');
     map.setView([47.7223, 9.3854], 13);
 
-    new L.OSM.Mapnik().addTo(map);
+    baseLayer = new L.OSM.Mapnik();
 
     var pointStyle = {
         radius: 4,
@@ -93,6 +105,9 @@ function init() {
         onEachFeature: function(feature, layer) {
             bindHover(feature, layer);
             bindPopup(feature, layer);
+            layer.on('add', function(evt) {
+                evt.target._container.setAttribute('visibility', visibility);
+            });
         }
     };
 
@@ -124,7 +139,7 @@ function init() {
 
     // debug layer, from: 
     // http://blog.mathieu-leplatre.info/leaflet-tiles-in-lambert-93-projection-2154.html
-    var tileDebugLayer = L.tileLayer.canvas();
+    tileDebugLayer = L.tileLayer.canvas();
     tileDebugLayer.drawTile = function(canvas, tilePoint, zoom) {
         var ctx = canvas.getContext('2d');
         ctx.strokeStyle = ctx.fillStyle = "red";
