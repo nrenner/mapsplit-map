@@ -18,10 +18,10 @@ var updateVisibility = function(aVisibility) {
     if (map._pathRoot) {
         if (visibility === 'hidden') {
             map.addLayer(baseLayer, true);
-            map.removeLayer(tileDebugLayer);
+            //map.removeLayer(tileDebugLayer);
         } else {
             map.removeLayer(baseLayer);
-            map.addLayer(tileDebugLayer);
+            //map.addLayer(tileDebugLayer);
         }
         
         // does not work as expected in Chrome (v26): 
@@ -40,7 +40,7 @@ var updateVisibility = function(aVisibility) {
 function init() {
 
     map = L.map('map');
-    map.setView([47.7223, 9.3854], 13);
+    map.setView([47.7223, 9.3854], 14);
 
     baseLayer = new L.OSM.Mapnik();
 
@@ -121,7 +121,10 @@ function init() {
             return feature.type.substr(0,1) + feature.id; 
         },
         // factory function for creating the actual vector layer, default is L.geoJson
-        layerFactory: L.osmPbf
+        layerFactory: L.osmPbf,
+        // fixed zoom level 13 for Mapsplit tiles (resize all other levels)
+        serverZooms: [13],
+        minZoom: 13
     };
     
     var vectorTileLayer = new L.TileLayer.Vector.Unclipped("tiles/{x}_{y}.pbf", tileOptions, vectorOptions);
@@ -137,6 +140,7 @@ function init() {
     */
     map.addLayer(vectorTileLayer);
 
+    /*
     // debug layer, from: 
     // http://blog.mathieu-leplatre.info/leaflet-tiles-in-lambert-93-projection-2154.html
     tileDebugLayer = L.tileLayer.canvas();
@@ -145,9 +149,10 @@ function init() {
         ctx.strokeStyle = ctx.fillStyle = "red";
         ctx.rect(0,0, 256,256);
         ctx.stroke();
-        ctx.fillText('(' + tilePoint.x + ', ' + tilePoint.y + ')',5,10);
+        ctx.fillText('' + tilePoint.x + '_' + tilePoint.y,5,10);
     };
     map.addLayer(tileDebugLayer);
+    */
 }
 
 init();
