@@ -93,6 +93,7 @@ function init() {
             // TODO create content on-demand, not for all features in advance?
             var popupContent = popup.getFeatureInfoHtml(feature);
             layer.bindPopup(popupContent, {offset:new L.Point(0,0)});
+            layer.bindLabel(popupContent);
     };
 
     var filter = function(feature) {
