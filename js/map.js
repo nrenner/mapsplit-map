@@ -1,5 +1,6 @@
 require('osm-pbf-leaflet');
 require('leaflet-tilelayer-vector');
+require('../lib/Permalink.js');
 var popup = require('./popup.js');
     
 var map;
@@ -41,6 +42,7 @@ function init() {
 
     map = L.map('map');
     map.setView([47.7223, 9.3854], 14);
+    map.addControl(new L.Control.Permalink({text: 'Permalink'}));
 
     baseLayer = new L.OSM.Mapnik();
 
