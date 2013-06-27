@@ -101,8 +101,22 @@ function init() {
             layer.bindLabel(popupContent);
     };
 
+    function allKeys(tags, start) {
+        for (key in tags) {
+            if (!(start === key.substr(0, start.length))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    // true keeps feature, false discards
     var filter = function(feature) {
-        return !feature.tags.building;
+        var tags = feature.tags,
+            noTags = Object.keys(tags).length === 0;
+        return map.getZoom() >= 17 
+            || !(noTags || tags.building || allKeys(tags, 'building') || allKeys(tags, 'roof:') 
+                || allKeys(tags, 'addr:') || tags.natural === 'tree' || tags.highway === 'street_lamp');   
     };
 
     var vectorOptions = {
