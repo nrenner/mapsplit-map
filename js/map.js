@@ -1,7 +1,7 @@
 require('osm-pbf-leaflet');
 require('leaflet-tilelayer-vector');
 require('../lib/Permalink.js');
-require('../lib/Leaflet.zoomslider-0.5.0/src/L.Control.Zoomslider.js');
+require('../lib/Leaflet.zoomslider/src/L.Control.Zoomslider.js');
 require('../lib/Leaflet.zoomdisplay/leaflet.zoomdisplay.js');
 var popup = require('./popup.js');
     
@@ -21,6 +21,7 @@ var updateVisibility = function(aVisibility) {
     if (map._pathRoot) {
         if (visibility === 'hidden') {
             map.addLayer(baseLayer, true);
+            baseLayer.bringToBack();
             //map.removeLayer(tileDebugLayer);
         } else {
             map.removeLayer(baseLayer);
@@ -144,6 +145,8 @@ function init() {
     });
     */
     map.addLayer(vectorTileLayer);
+    
+    new L.TileLayer.Progress(vectorTileLayer).addTo(map);
 
     /*
     // debug layer, from: 
