@@ -2,6 +2,7 @@
  * Side panel Controls
  */
 
+require('./optimize.js');
 var mm = require('./map.js');
 
 function updateVisibility(e) {

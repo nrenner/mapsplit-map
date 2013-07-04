@@ -80,25 +80,34 @@ function init() {
         visibility: 'visible' */
     };
     var bindHover = function(feature, layer) {
-        layer.on('mouseover', function() {
-            layer.defaultOptions = layer.options; 
-            layer.setStyle(hoverStyle);
-            layer._path.setAttribute('visibility', 'visible');
-        });
+        layer.on('mouseover', function(evt) {
+            this.defaultOptions = this.options; 
+            this.setStyle(hoverStyle);
+            this._path.setAttribute('visibility', 'visible');
+
+            // lazy label binding for better performance
+            // (registering less events + creating less objects on tile load)
+            var popupContent = popup.getFeatureInfoHtml(this.feature);
+            this.bindLabel(popupContent);
+            this._showLabel(evt);
+        }, layer);
         layer.on('mouseout', function(evt) {
             // TODO resetStyle for L.OSM.DataLayer? (has styles instead of style)
             //layer.resetStyle(evt.target);
-            L.Util.extend(layer.options, layer.defaultOptions);
-            layer._updateStyle();
-            layer._path.setAttribute('visibility', 'inherit');
-        });
+            L.Util.extend(this.options, this.defaultOptions);
+            this._updateStyle();
+            this._path.setAttribute('visibility', 'inherit');
+        }, layer);
     };
 
     var bindPopup = function(feature, layer) {
-            // TODO create content on-demand, not for all features in advance?
-            var popupContent = popup.getFeatureInfoHtml(feature);
-            layer.bindPopup(popupContent, {offset:new L.Point(0,0)});
-            layer.bindLabel(popupContent);
+        layer.on('click', function(evt) {
+            // lazy popup binding for better performance
+            // (registering less events + creating less objects on tile load)
+            var popupContent = popup.getFeatureInfoHtml(this.feature);
+            this.bindPopup(popupContent, {offset:new L.Point(0,0)});
+            this._openPopup(evt);
+        }, layer);
     };
 
     function allKeys(tags, start) {
