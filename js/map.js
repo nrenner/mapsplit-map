@@ -18,26 +18,32 @@ var visibility = 'visible';
  */
 var updateVisibility = function(aVisibility) {
     visibility = aVisibility;
-    if (map._pathRoot) {
-        if (visibility === 'hidden') {
-            map.addLayer(baseLayer, true);
-            baseLayer.bringToBack();
-            //map.removeLayer(tileDebugLayer);
-        } else {
-            map.removeLayer(baseLayer);
-            //map.addLayer(tileDebugLayer);
-        }
-        
+    if (visibility === 'hidden') {
+        map.addLayer(baseLayer, true);
+        baseLayer.bringToBack();
+        //map.removeLayer(tileDebugLayer);
+    } else {
+        map.removeLayer(baseLayer);
+        //map.addLayer(tileDebugLayer);
+    }
+    
+    if (L.Path.CANVAS) {
+        map._pathRoot.style.visibility = aVisibility;
+    } else {
         // does not work as expected in Chrome (v26): 
         // when svg root is hidden, setting visible on child has no effect
         //map._pathRoot.setAttribute('visibility', visibility);
         var children = map._pathRoot.childNodes;
         for (var i = 0; i < children.length; i++) {
-            children[i].setAttribute('visibility', aVisibility);
+            setPathVisibility(children[i], aVisibility);
         }
         map._pathRoot.setAttribute('pointer-events', 'painted');
-    } else {
-        console.warn('Could not set visibility');
+    }
+};
+
+var setPathVisibility = function(pathEle, aVisibility) {
+    if (pathEle) {
+        pathEle.setAttribute('visibility', aVisibility);
     }
 };
 
@@ -81,22 +87,26 @@ function init() {
     };
     var bindHover = function(feature, layer) {
         layer.on('mouseover', function(evt) {
-            this.defaultOptions = this.options; 
+            if (!this.defaultOptions) {
+                this.defaultOptions = this.options;
+            }
             this.setStyle(hoverStyle);
-            this._path.setAttribute('visibility', 'visible');
+            setPathVisibility(this._path, 'visible');
 
             // lazy label binding for better performance
             // (registering less events + creating less objects on tile load)
             var popupContent = popup.getFeatureInfoHtml(this.feature);
-            this.bindLabel(popupContent);
-            this._showLabel(evt);
+            if (!this._label) {
+                this.bindLabel(popupContent);
+                this._showLabel(evt);
+            }
         }, layer);
         layer.on('mouseout', function(evt) {
             // TODO resetStyle for L.OSM.DataLayer? (has styles instead of style)
             //layer.resetStyle(evt.target);
             L.Util.extend(this.options, this.defaultOptions);
-            this._updateStyle();
-            this._path.setAttribute('visibility', 'inherit');
+            this.setStyle(this.options);
+            setPathVisibility(this._path, 'inherit');
         }, layer);
     };
 
@@ -135,7 +145,7 @@ function init() {
             bindHover(feature, layer);
             bindPopup(feature, layer);
             layer.on('add', function(evt) {
-                evt.target._container.setAttribute('visibility', visibility);
+                setPathVisibility(evt.target._container, visibility);
             });
         }
     };
