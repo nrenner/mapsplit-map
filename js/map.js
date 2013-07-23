@@ -3,6 +3,7 @@ require('leaflet-tilelayer-vector');
 require('../lib/Permalink.js');
 require('../lib/Leaflet.zoomslider/src/L.Control.Zoomslider.js');
 require('../lib/Leaflet.zoomdisplay/leaflet.zoomdisplay.js');
+require('./PbfWorker.js');
 var popup = require('./popup.js');
     
 var map;
@@ -161,6 +162,9 @@ function init() {
         },
         // factory function for creating the actual vector layer, default is L.geoJson
         layerFactory: L.osmPbf,
+        // web worker
+        workerFactory: L.pbfWorker,
+        //workerFactory: L.noWorker,
         // fixed zoom level 13 for Mapsplit tiles (resize all other levels)
         serverZooms: [13],
         minZoom: 13
@@ -168,10 +172,15 @@ function init() {
     
     var vectorTileLayer = new L.TileLayer.Vector.Unclipped("tiles/{x}_{y}.pbf", tileOptions, vectorOptions);
     /*
+    vectorTileLayer.on('loading', function() {
+        console.time('load');
+        timer.reset();
+    });
     vectorTileLayer.on('load', function() {
-        //console.log('===== loaded ======');
-        var tilesKeys = Object.keys(vectorTileLayer._tiles);
-        console.log('_tiles (' + tilesKeys.length + '): ' + tilesKeys);
+        console.timeEnd('load');
+        timer.report();
+        //var tilesKeys = Object.keys(vectorTileLayer._tiles);
+        //console.log('_tiles (' + tilesKeys.length + '): ' + tilesKeys);
     });
     map.on('moveend', function() {
         console.log('----- moveend -----');
