@@ -8,9 +8,12 @@ var popup = require('./popup.js');
     
 var map;
 var baseLayer;
+var emptyBaseLayer;
 var vectorTileLayer;
 var tileDebugLayer;
+var layerControl;
 var visibility = 'visible';
+var baseLayerActive = false;
 
 /**
  * Changes the visibility for all features (supporting hover only)
@@ -20,12 +23,14 @@ var visibility = 'visible';
 var updateVisibility = function(aVisibility) {
     visibility = aVisibility;
     if (visibility === 'hidden') {
-        map.addLayer(baseLayer, true);
-        baseLayer.bringToBack();
-        //map.removeLayer(tileDebugLayer);
-    } else {
+        baseLayerActive = map.hasLayer(baseLayer);
+        if (!baseLayerActive) {
+            map.addLayer(baseLayer);
+            map.removeLayer(emptyBaseLayer);
+        }
+    } else if (!baseLayerActive) {
         map.removeLayer(baseLayer);
-        //map.addLayer(tileDebugLayer);
+        map.addLayer(emptyBaseLayer);
     }
     
     if (L.Path.CANVAS) {
@@ -54,6 +59,7 @@ function init() {
     map.setView([47.7223, 9.3854], 14);
     map.addControl(new L.Control.Permalink({text: 'Permalink'}));
 
+    emptyBaseLayer = new L.TileLayer.Canvas().addTo(map); 
     baseLayer = new L.OSM.Mapnik();
 
     var pointStyle = {
@@ -188,8 +194,17 @@ function init() {
     */
     map.addLayer(vectorTileLayer);
     
-    new L.TileLayer.Progress(vectorTileLayer).addTo(map);
+    var progressLayer = new L.TileLayer.Progress(vectorTileLayer).addTo(map);
 
+    layerControl = L.control.layers({
+        'no base layer': emptyBaseLayer,
+        'OSM Mapnik': baseLayer
+    }, {
+        'Vector Tiles': vectorTileLayer,
+        'Loading Tiles': progressLayer
+    }).addTo(map);    
+
+    
     /*
     // debug layer, from: 
     // http://blog.mathieu-leplatre.info/leaflet-tiles-in-lambert-93-projection-2154.html
