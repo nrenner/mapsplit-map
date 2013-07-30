@@ -66,12 +66,15 @@ var setPathVisibility = function(pathEle, aVisibility) {
 
 function init() {
 
-    map = L.map('map');
+    map = L.map('map', {
+        minZoom: 0,
+        maxZoom: 18
+    });
     map.setView([47.7223, 9.3854], 14);
     map.addControl(new L.Control.Permalink({text: 'Permalink'}));
     //map.addControl(new L.Control.ZoomInfo());
 
-    emptyBaseLayer = new L.TileLayer.Canvas().addTo(map); 
+    emptyBaseLayer = L.layerGroup().addTo(map);
     baseLayer = new L.OSM.Mapnik();
 
     var pointStyle = {
