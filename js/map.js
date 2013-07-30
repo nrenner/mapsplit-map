@@ -2,6 +2,7 @@ require('osm-pbf-leaflet');
 require('leaflet-tilelayer-vector');
 require('../lib/Permalink.js');
 require('../lib/Leaflet.zoomslider/src/L.Control.Zoomslider.js');
+require('./L.Control.Zoomslider-patch.js');
 require('../lib/Leaflet.zoomdisplay/leaflet.zoomdisplay.js');
 //require('./Control.ZoomInfo.js');
 require('./PbfWorker.js');

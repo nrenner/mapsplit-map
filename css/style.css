@@ -29,6 +29,7 @@ body {
 }
 .leaflet-container {
     background: #f1eee8 !important;
+    cursor: auto !important;
 }
 
 .content {
@@ -74,5 +75,14 @@ h3 {
 
 .subtitle {
     margin: 0 0 1.12em 0;
+}
+
+.leaflet-control-zoomslider-body-overlay {
+    position: absolute;
+    top: 86px; /* 27 + 5 + ((18 - 13 + 1) * 9) */
+    height: 117px; /* 13 * 9 */
+    background-color: rgba(255, 255, 255, 0.6);
+    width: 100%;
+    pointer-events: none;
 }
 
