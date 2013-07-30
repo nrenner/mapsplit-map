@@ -3,6 +3,7 @@ require('leaflet-tilelayer-vector');
 require('../lib/Permalink.js');
 require('../lib/Leaflet.zoomslider/src/L.Control.Zoomslider.js');
 require('../lib/Leaflet.zoomdisplay/leaflet.zoomdisplay.js');
+//require('./Control.ZoomInfo.js');
 require('./PbfWorker.js');
 var popup = require('./popup.js');
     
@@ -23,14 +24,9 @@ var baseLayerActive = false;
 var updateVisibility = function(aVisibility) {
     visibility = aVisibility;
     if (visibility === 'hidden') {
-        baseLayerActive = map.hasLayer(baseLayer);
-        if (!baseLayerActive) {
-            map.addLayer(baseLayer);
-            map.removeLayer(emptyBaseLayer);
-        }
-    } else if (!baseLayerActive) {
-        map.removeLayer(baseLayer);
-        map.addLayer(emptyBaseLayer);
+        activateBaseLayer();
+    } else {
+        restoreBaseLayer();
     }
     
     if (L.Path.CANVAS) {
@@ -47,6 +43,21 @@ var updateVisibility = function(aVisibility) {
     }
 };
 
+var activateBaseLayer = function() {
+    baseLayerActive = map.hasLayer(baseLayer);
+    if (!baseLayerActive) {
+        map.addLayer(baseLayer);
+        map.removeLayer(emptyBaseLayer);
+    }
+};
+
+var restoreBaseLayer = function() {
+    if (!baseLayerActive) {
+        map.removeLayer(baseLayer);
+        map.addLayer(emptyBaseLayer);
+    }
+};
+
 var setPathVisibility = function(pathEle, aVisibility) {
     if (pathEle) {
         pathEle.setAttribute('visibility', aVisibility);
@@ -58,6 +69,7 @@ function init() {
     map = L.map('map');
     map.setView([47.7223, 9.3854], 14);
     map.addControl(new L.Control.Permalink({text: 'Permalink'}));
+    //map.addControl(new L.Control.ZoomInfo());
 
     emptyBaseLayer = new L.TileLayer.Canvas().addTo(map); 
     baseLayer = new L.OSM.Mapnik();
@@ -223,3 +235,6 @@ function init() {
 init();
 
 exports.updateVisibility = updateVisibility;
+exports.map = map;
+exports.activateBaseLayer = activateBaseLayer;
+exports.restoreBaseLayer = restoreBaseLayer;

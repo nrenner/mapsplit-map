@@ -57,3 +57,16 @@ table tr td:first-child {
     padding-bottom: 3px;
     font-weight: bold;
 }
+.hidden {
+    display: none;
+}
+#zoomhint {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    margin-top: 10px;
+    margin-left: 46px !important; /* 10 + 26 + 10 */
+    padding: 7px;
+    background-color: rgba(255, 255, 255, 0.7);
+    font-weight: bold;
+}
