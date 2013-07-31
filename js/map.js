@@ -158,9 +158,10 @@ function init() {
     var filter = function(feature) {
         var tags = feature.tags,
             noTags = Object.keys(tags).length === 0;
-        return map.getZoom() >= 17 
+        return (map.getZoom() >= 17 
             || !(noTags || tags.building || allKeys(tags, 'building') || allKeys(tags, 'roof:') 
-                || allKeys(tags, 'addr:') || tags.natural === 'tree' || tags.highway === 'street_lamp');   
+                || allKeys(tags, 'addr:') || tags.natural === 'tree' || tags.highway === 'street_lamp'))
+            && (map.getZoom() >= 15 || !(feature.type === 'node') || tags.place);   
     };
 
     var vectorOptions = {
