@@ -76,7 +76,9 @@ function init() {
     //map.addControl(new L.Control.ZoomInfo());
 
     emptyBaseLayer = L.layerGroup().addTo(map);
-    baseLayer = new L.OSM.Mapnik();
+    baseLayer = new L.OSM.Mapnik({ 
+        attribution: 'map &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
 
     var pointStyle = {
         radius: 4,
@@ -189,7 +191,9 @@ function init() {
         //workerFactory: L.noWorker,
         // fixed zoom level 13 for Mapsplit tiles (resize all other levels)
         serverZooms: [13],
-        minZoom: 13
+        minZoom: 13,
+        attribution: 'data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, '
+            + 'licensed under <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>'
     };
     
     var vectorTileLayer = new L.TileLayer.Vector.Unclipped("tiles/{x}_{y}.pbf", tileOptions, vectorOptions);
