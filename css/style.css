@@ -13,7 +13,6 @@ body {
     position: fixed;
     top: 20px;
     right: 0px;
-    bottom: 0px;
     width: 200px;
 }
 
@@ -21,12 +20,15 @@ body {
     position: absolute;
     top: 20px;
     left: 20px;
+    right: 200px;
+}
+#panel, #map {
     /*
     bottom: 20px;
     */
     height: 400px;
-    right: 200px;
 }
+
 .leaflet-container {
     background: #f1eee8 !important;
     cursor: auto !important;
@@ -97,3 +99,8 @@ ul {
     pointer-events: none;
 }
 
+#minimap {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+}

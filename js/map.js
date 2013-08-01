@@ -225,6 +225,19 @@ function init() {
         'Loading Tiles': progressLayer
     }).addTo(map);    
 
+    // MiniMap (overview map)
+    L.Map.mergeOptions({
+        zoomsliderControl: false,
+        zoomDisplayControl: false
+    });
+    var osmMini = new L.OSM.Mapnik();
+    var miniMap = new L.Control.MiniMap(osmMini, { 
+        toggleDisplay: false,
+        width: 164,
+        height: 164
+    }).addTo(map);
+    miniMap._container.parentNode.removeChild(miniMap._container);
+    document.getElementById('minimap').appendChild(miniMap._container);
     
     /*
     // debug layer, from: 
