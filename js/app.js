@@ -6,21 +6,21 @@ require('./optimize.js');
 var mm = require('./map.js');
 
 var map = mm.map,
-    oldZoom = map.getZoom();
+    oldZoom = null;
 
 function updateVisibility(e) {
     var ele = e.target || e.srcElement;
     mm.updateVisibility(ele.value);
 }
 
-function onZoomend() {
+function updateZoomHint() {
     var zoom = map.getZoom(),
         ele = document.getElementById('zoomhint');
 
-    if (zoom >= 13 && oldZoom < 13) {
+    if (zoom >= 13 && (!oldZoom || oldZoom < 13)) {
         ele.classList.add('hidden');
         mm.restoreBaseLayer();
-    } else if (zoom < 13 && oldZoom >= 13) {
+    } else if (zoom < 13 && (!oldZoom || oldZoom >= 13)) {
         ele.classList.remove('hidden');
         mm.activateBaseLayer();
     }
@@ -33,7 +33,8 @@ function init() {
         radios[i].onclick = updateVisibility;
     }
 
-    mm.map.on('zoomend', onZoomend, this);
+    mm.map.on('zoomend', updateZoomHint, this);
+    updateZoomHint();
 }
 
 init();
