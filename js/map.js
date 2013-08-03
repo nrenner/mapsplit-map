@@ -7,6 +7,7 @@ require('../lib/Leaflet.zoomdisplay/leaflet.zoomdisplay.js');
 //require('./Control.ZoomInfo.js');
 require('./PbfWorker.js');
 var popup = require('./popup.js');
+var miniMap = require('./minimap.js');
     
 var map;
 var baseLayer;
@@ -226,18 +227,7 @@ function init() {
     }).addTo(map);    
 
     // MiniMap (overview map)
-    L.Map.mergeOptions({
-        zoomsliderControl: false,
-        zoomDisplayControl: false
-    });
-    var osmMini = new L.OSM.Mapnik();
-    var miniMap = new L.Control.MiniMap(osmMini, { 
-        toggleDisplay: false,
-        width: 164,
-        height: 164
-    }).addTo(map);
-    miniMap._container.parentNode.removeChild(miniMap._container);
-    document.getElementById('minimap').appendChild(miniMap._container);
+    miniMap.init(map);
     
     /*
     // debug layer, from: 
