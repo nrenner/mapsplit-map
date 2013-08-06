@@ -4,6 +4,7 @@ require('../lib/Permalink.js');
 require('../lib/Leaflet.zoomslider/src/L.Control.Zoomslider.js');
 require('./L.Control.Zoomslider-patch.js');
 require('../lib/Leaflet.zoomdisplay/leaflet.zoomdisplay.js');
+require('./Control.Progress');
 //require('./Control.ZoomInfo.js');
 require('./PbfWorker.js');
 var popup = require('./popup.js');
@@ -214,8 +215,9 @@ function init() {
         console.log('----- moveend -----');
     });
     */
+    map.addControl(new L.Control.Progress(vectorTileLayer, {div: 'progress-container'}));
     map.addLayer(vectorTileLayer);
-    
+
     var progressLayer = new L.TileLayer.Progress(vectorTileLayer).addTo(map);
 
     layerControl = L.control.layers({

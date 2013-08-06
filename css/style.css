@@ -58,15 +58,32 @@ table tr td:first-child {
 .hidden {
     display: none;
 }
-#zoomhint {
+#zoomhint, #progress-container {
     position: absolute;
     top: 20px;
     left: 20px;
     margin-top: 10px;
     margin-left: 46px !important; /* 10 + 26 + 10 */
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+#zoomhint, .progress {
     padding: 7px;
-    background-color: rgba(255, 255, 255, 0.7);
     font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+#zoomhint {
+    padding: 7px;
+} 
+.progress {
+    padding: 5px;
+}
+.progress-text {
+    margin-right: 10px;
+    vertical-align: top;
 }
 
 h3 {
