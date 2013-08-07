@@ -18,6 +18,7 @@ var tileDebugLayer;
 var layerControl;
 var visibility = 'visible';
 var baseLayerActive = false;
+var landuse = true;
 
 /**
  * Changes the visibility for all features (supporting hover only)
@@ -65,6 +66,11 @@ var setPathVisibility = function(pathEle, aVisibility) {
     if (pathEle) {
         pathEle.setAttribute('visibility', aVisibility);
     }
+};
+
+var showLanduse = function(aLanduse) {
+    landuse = aLanduse;
+    vectorTileLayer.redraw();
 };
 
 function init() {
@@ -163,7 +169,8 @@ function init() {
         return (map.getZoom() >= 17 
             || !(noTags || tags.building || allKeys(tags, 'building') || allKeys(tags, 'roof:') 
                 || allKeys(tags, 'addr:') || tags.natural === 'tree' || tags.highway === 'street_lamp'))
-            && (map.getZoom() >= 15 || !(feature.type === 'node') || tags.place);   
+            && (map.getZoom() >= 15 || !(feature.type === 'node') || tags.place)
+            && (landuse || !(feature.area && (tags.landuse || tags.natural || tags.leisure)));
     };
 
     var vectorOptions = {
@@ -199,7 +206,7 @@ function init() {
             + 'licensed under <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>'
     };
     
-    var vectorTileLayer = new L.TileLayer.Vector.Unclipped("tiles/{x}_{y}.pbf", tileOptions, vectorOptions);
+    vectorTileLayer = new L.TileLayer.Vector.Unclipped("tiles/{x}_{y}.pbf", tileOptions, vectorOptions);
     /*
     vectorTileLayer.on('loading', function() {
         console.time('load');
@@ -249,6 +256,7 @@ function init() {
 init();
 
 exports.updateVisibility = updateVisibility;
+exports.showLanduse = showLanduse;
 exports.map = map;
 exports.activateBaseLayer = activateBaseLayer;
 exports.restoreBaseLayer = restoreBaseLayer;

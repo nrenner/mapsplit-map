@@ -8,9 +8,14 @@ var mm = require('./map.js');
 var map = mm.map,
     oldZoom = null;
 
-function updateVisibility(e) {
-    var ele = e.target || e.srcElement;
+function updateVisibility(evt) {
+    var ele = evt.target || evt.srcElement;
     mm.updateVisibility(ele.value);
+}
+
+function updateLanduse(evt) {
+    var ele = evt.target || evt.srcElement;
+    mm.showLanduse(ele.checked);
 }
 
 function updateZoomHint() {
@@ -32,6 +37,8 @@ function init() {
     for (var i = 0; i < radios.length; i++) {
         radios[i].onclick = updateVisibility;
     }
+    
+    document.getElementById('landuse').onclick = updateLanduse;
 
     mm.map.on('zoomend', updateZoomHint, this);
     updateZoomHint();
