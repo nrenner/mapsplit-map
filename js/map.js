@@ -7,6 +7,8 @@ require('../lib/Leaflet.zoomdisplay/leaflet.zoomdisplay.js');
 require('./Control.Progress');
 //require('./Control.ZoomInfo.js');
 require('./PbfWorker.js');
+require('./Path._updatePathViewport.js');
+
 var popup = require('./popup.js');
 var miniMap = require('./minimap.js');
     
@@ -75,6 +77,10 @@ var showLanduse = function(aLanduse) {
 
 function init() {
 
+    // enlarge vector clip bounds, restricted by tile bounds, 
+    // see Path._updatePathViewport.js
+    L.Path.CLIP_PADDING = 1;
+    
     map = L.map('map', {
         minZoom: 0,
         maxZoom: 18
@@ -222,6 +228,10 @@ function init() {
         console.log('----- moveend -----');
     });
     */
+    
+    // hack for Path_updatePathViewport.js
+    map._vectorTileLayer = vectorTileLayer;
+
     map.addControl(new L.Control.Progress(vectorTileLayer, {div: 'progress-container'}));
     map.addLayer(vectorTileLayer);
 
