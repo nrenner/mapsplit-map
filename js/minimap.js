@@ -1,3 +1,12 @@
+// MiniMap animation slow (Chrome profile)?  
+// reset animation include, MiniMap ignores animation options
+L.Map.include({
+    setView: function (center, zoom) {
+        this._resetView(L.latLng(center), this._limitZoom(zoom));
+        return this;
+    }
+});
+
 // MiniMap (overview map)
 function init(map) {
     L.Map.mergeOptions({

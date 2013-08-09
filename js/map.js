@@ -83,7 +83,14 @@ function init() {
     
     map = L.map('map', {
         minZoom: 0,
-        maxZoom: 18
+        maxZoom: 18,
+        // disable keyboard, L.Map.Keyboard._onMouseDown slow (?)
+        keyboard: false,
+        // disable force/kinetic dragging, not recognizable with many vectors, sometimes too fast
+        inertia: false,
+        // ignored by MiniMap > reset setView in minimap.js
+        //reset: true,
+        //animate: false
     });
     map.setView([47.7223, 9.3854], 14);
     map.addControl(new L.Control.Permalink({text: 'Permalink'}));
