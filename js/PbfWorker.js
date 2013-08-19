@@ -1,4 +1,4 @@
-require('osm-pbf-leaflet');
+var workerPath = 'bundle-worker.js';
 
 L.PbfWorker = L.AbstractWorker.extend({
     options: {
@@ -27,7 +27,7 @@ L.PbfWorker = L.AbstractWorker.extend({
     _process: function(tile, callback) {
         var worker, parsed;
         if (typeof Worker === "function") {
-            worker = new Worker('js/worker.js?' + Date.now());
+            worker = new Worker(workerPath);
             tile._worker = worker;
             worker.addEventListener('message', L.bind(function(e) {
                 parsed = JSON.parse(e.data.parsed);

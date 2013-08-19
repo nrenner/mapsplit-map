@@ -1,4 +1,7 @@
-require('osm-pbf-leaflet');
+// TODO split osm-pbf-leaflet into separate projects
+//require('osm-pbf-leaflet');
+require('../node_modules/osm-pbf-leaflet/lib/OSMReader.js');
+require('../node_modules/osm-pbf-leaflet/lib/leaflet-osm.js');
 require('leaflet-tilelayer-vector');
 require('../lib/Permalink.js');
 require('../lib/Leaflet.zoomslider/src/L.Control.Zoomslider.js');
@@ -208,7 +211,11 @@ function init() {
             return feature.type.substr(0,1) + feature.id; 
         },
         // factory function for creating the actual vector layer, default is L.geoJson
-        layerFactory: L.osmPbf,
+        // PBF parsing done in worker, use default layer here to avoid dependency in main bundle
+        //layerFactory: L.osmPbf
+        layerFactory: function(data, options) {
+            return new L.OSM.DataLayer(data, options);
+        },
         // web worker
         workerFactory: L.pbfWorker,
         //workerFactory: L.noWorker,

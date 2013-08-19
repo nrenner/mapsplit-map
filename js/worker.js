@@ -1,4 +1,5 @@
-importScripts('../node_modules/osm-pbf-leaflet/dist/osm-pbf-worker.js');
+require('../node_modules/osm-pbf-leaflet/lib/OSMReader.js');
+require('../node_modules/osm-pbf-leaflet/PBFParser.js');
 
 self.addEventListener('message', function(e) {
     var reader = new OSM.Reader(OSM.PBFParser);
