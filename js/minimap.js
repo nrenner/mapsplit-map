@@ -7,6 +7,16 @@ L.Map.include({
     }
 });
 
+// patch to avoid resetting main map on MiniMap add (_mainMapMoving=false initially)
+// (addTo > _miniMap.setView > 'moveend' > _onMiniMapMoved > _mainMap.setView)
+L.Control.MyMiniMap = L.Control.MiniMap.extend({
+    onAdd: function (map) {
+        L.Control.MiniMap.prototype.onAdd.call(this, map);
+        this._mainMapMoving = true;
+        return this._container;
+    }
+});
+
 // MiniMap (overview map)
 function init(map) {
     L.Map.mergeOptions({
@@ -16,7 +26,7 @@ function init(map) {
     var osmMini = new L.OSM.Mapnik({
         opacity: 0.7
     });
-    var miniMap = new L.Control.MiniMap(osmMini, { 
+    var miniMap = new L.Control.MyMiniMap(osmMini, { 
         toggleDisplay: false,
         //zoomLevelOffset: -5,
         width: 164,
