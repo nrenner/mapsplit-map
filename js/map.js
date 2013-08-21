@@ -104,9 +104,17 @@ function init() {
         attribution: 'map &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
 
+    var colors = {
+        // Leaflet colors (http://leafletjs.com/examples/geojson.html)
+        polygon: '#b0de5c',
+        line: '#0033ff',
+        point: '#ff7800',
+        hover: 'red'
+    };
+
     var pointStyle = {
         radius: 4,
-        fillColor: "#ff7800",
+        fillColor: colors.point,
         color: "#000",
         weight: 1,
         opacity: 1,
@@ -114,13 +122,14 @@ function init() {
     };
     var lineStyle = {
         weight: 4,
-        opacity: 0.7
+        opacity: 0.7,
+        color: colors.line
     };
     var polygonStyle = {
         weight: 2,
         color: "#999",
         opacity: 1,
-        fillColor: "#B0DE5C",
+        fillColor: colors.polygon,
         fillOpacity: 0.5
     };
     var styles = {
@@ -129,17 +138,19 @@ function init() {
         area: polygonStyle
     };
 
-    var hoverStyle = {
-        color: 'red',
-        fillColor: 'red' /*,
-        visibility: 'visible' */
+    var getHoverStyle = function(layer) {
+        return {
+            weight: layer.options.weight + 1,
+            color: colors.hover,
+            fillColor: colors.hover
+        };
     };
     var bindHover = function(feature, layer) {
         layer.on('mouseover', function(evt) {
             if (!this.defaultOptions) {
                 this.defaultOptions = this.options;
             }
-            this.setStyle(hoverStyle);
+            this.setStyle(getHoverStyle(this));
             setPathVisibility(this._path, 'visible');
 
             // lazy label binding for better performance
