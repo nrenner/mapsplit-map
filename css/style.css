@@ -36,7 +36,7 @@ body {
 
 .content {
     margin-left: 10px;
-    padding: 10px;
+    padding: 0px 10px;
 }
 a {
     color: black;
@@ -90,16 +90,19 @@ h3 {
     font-size: 1.2em; 
     margin: 0em 0 .4em 0;
     font-weight: bold;
+    float: left;
+    width: 105px;
 }
 
 p {
     margin: 1.12em 0;
 }
 p.subtitle {
+    clear: both;
     margin-top: 0;
 }
 p.auto-filter-info {
-    margin: 2.24em 0 0 0;
+    margin: 1.12em 0 0 0;
 }
 ul {
     list-style-type: none; /*disc;*/
@@ -123,6 +126,6 @@ div.field {
 
 #minimap {
     position: absolute;
-    bottom: 10px;
+    bottom: 0px;
     left: 20px;
 }

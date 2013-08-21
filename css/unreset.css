@@ -1,0 +1,15 @@
+body {
+    line-height: normal; 
+}
+sup {
+    vertical-align: super;
+}
+small,
+sub,
+sup {
+    font-size: smaller;
+}
+sub,
+sup {
+    line-height: normal;
+}
