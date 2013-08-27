@@ -86,7 +86,7 @@ function init() {
     
     map = L.map('map', {
         minZoom: 0,
-        maxZoom: 18,
+        maxZoom: 19,
         // disable keyboard, L.Map.Keyboard._onMouseDown slow (?)
         keyboard: false,
         // disable force/kinetic dragging, not recognizable with many vectors, sometimes too fast
@@ -233,6 +233,7 @@ function init() {
         // fixed zoom level 13 for Mapsplit tiles (resize all other levels)
         serverZooms: [13],
         minZoom: 13,
+        maxZoom: 19,
         attribution: 'data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, '
             + 'licensed under <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>'
     };
