@@ -85,7 +85,7 @@ function init() {
     L.Path.CLIP_PADDING = 1;
     
     map = L.map('map', {
-        minZoom: 0,
+        minZoom: 5,
         maxZoom: 19,
         // disable keyboard, L.Map.Keyboard._onMouseDown slow (?)
         keyboard: false,

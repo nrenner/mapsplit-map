@@ -118,7 +118,7 @@ div.field {
 .leaflet-control-zoomslider-body-overlay {
     position: absolute;
     top: 95px; /* 27 + 5 + ((19 - 13 + 1) * 9) */
-    height: 117px; /* 13 * 9 */
+    height: 72px; /* (13 - 5) * 9 */
     background-color: rgba(255, 255, 255, 0.6);
     width: 100%;
     pointer-events: none;
