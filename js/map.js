@@ -3,7 +3,8 @@
 require('../node_modules/osm-pbf-leaflet/lib/OSMReader.js');
 require('../node_modules/osm-pbf-leaflet/lib/leaflet-osm.js');
 require('leaflet-tilelayer-vector');
-require('../lib/Permalink.js');
+require('../lib/leaflet-plugins/Permalink.js');
+require('../lib/leaflet-plugins/Permalink.Layer.js');
 require('../lib/Leaflet.zoomslider/src/L.Control.Zoomslider.js');
 require('./L.Control.Zoomslider-patch.js');
 require('../lib/Leaflet.zoomdisplay/leaflet.zoomdisplay.js');
@@ -22,7 +23,7 @@ var vectorTileLayer;
 var tileDebugLayer;
 var layerControl;
 var visibility = 'visible';
-var baseLayerActive = false;
+var baseLayerActive = null;
 var landuse = true;
 
 /**
@@ -61,7 +62,7 @@ var activateBaseLayer = function() {
 };
 
 var restoreBaseLayer = function() {
-    if (!baseLayerActive) {
+    if (baseLayerActive !== null && !baseLayerActive) {
         map.removeLayer(baseLayer);
         map.addLayer(emptyBaseLayer);
     }
@@ -96,10 +97,9 @@ function init() {
         //animate: false
     });
     map.setView([47.7223, 9.3854], 14);
-    map.addControl(new L.Control.Permalink({text: 'Permalink'}));
     //map.addControl(new L.Control.ZoomInfo());
 
-    emptyBaseLayer = L.layerGroup().addTo(map);
+    emptyBaseLayer = L.layerGroup();
     baseLayer = new L.OSM.Mapnik({ 
         attribution: 'map &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
@@ -265,12 +265,18 @@ function init() {
     var progressLayer = new L.TileLayer.Progress(vectorTileLayer).addTo(map);
 
     layerControl = L.control.layers({
-        'no base layer': emptyBaseLayer,
-        'OSM Mapnik': baseLayer
+        'OSM Mapnik': baseLayer,
+        'no base layer': emptyBaseLayer
     }, {
         'Vector Tiles': vectorTileLayer,
         'Loading Tiles': progressLayer
-    }).addTo(map);    
+    }).addTo(map);
+    baseLayer.addTo(map);
+
+    map.addControl(new L.Control.Permalink({
+        text: 'Permalink',
+        layers: layerControl
+    }));
 
     // MiniMap (overview map)
     miniMap.init(map);
