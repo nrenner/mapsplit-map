@@ -195,7 +195,8 @@ function init() {
             noTags = Object.keys(tags).length === 0;
         return (map.getZoom() >= 17 
             || !(noTags || tags.building || allKeys(tags, 'building') || allKeys(tags, 'roof:') 
-                || allKeys(tags, 'addr:') || tags.natural === 'tree' || tags.highway === 'street_lamp'))
+                || allKeys(tags, 'addr:') || tags.natural === 'tree' || tags.highway === 'street_lamp'
+                || tags.barrier === 'fence' || tags['building:demolished'] === 'yes'))
             && (map.getZoom() >= 15 || !(feature.type === 'node') || tags.place)
             && (landuse || !(feature.area && (tags.landuse || tags.natural || tags.leisure)));
     };
