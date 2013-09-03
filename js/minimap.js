@@ -39,8 +39,8 @@ function init(map) {
     if (bounds) {
         var boundsGroup = L.featureGroup(window.bounds);
         boundsGroup.setStyle({
-            weight: 2,
-            dashArray: '10, 5',
+            weight: 1,
+            //dashArray: '10, 5',
             color: 'black',
             opacity: 1,
             fill: false
