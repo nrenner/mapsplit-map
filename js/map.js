@@ -96,7 +96,7 @@ function init() {
         //reset: true,
         //animate: false
     });
-    map.setView([47.7223, 9.3854], 14);
+    map.setView([52.4859, -1.88935], 16);
     //map.addControl(new L.Control.ZoomInfo());
 
     emptyBaseLayer = L.layerGroup();
