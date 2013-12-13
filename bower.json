@@ -1,0 +1,12 @@
+{
+  "name": "mapsplit-map",
+  "version": "0.1.0",
+  "main": "js/app.js",
+  "ignore": [
+    "**/.*",
+    "bower_components"
+  ],
+  "dependencies": {
+    "leaflet": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-master.zip"
+  }
+}
