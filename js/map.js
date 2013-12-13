@@ -228,6 +228,7 @@ function init() {
         layerFactory: function(data, options) {
             return new L.OSM.DataLayer(data, options);
         },
+        ajax: L.Request.binaryGet,
         // web worker
         workerFactory: L.pbfWorker,
         //workerFactory: L.noWorker,
