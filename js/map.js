@@ -264,13 +264,15 @@ function init() {
     map.addLayer(vectorTileLayer);
 
     var progressLayer = new L.TileLayer.Progress(vectorTileLayer).addTo(map);
+    var debugLayer = new L.TileLayer.Debug(vectorTileLayer);
 
     layerControl = L.control.layers({
         'OSM Mapnik': baseLayer,
         'no base layer': emptyBaseLayer
     }, {
         'Vector Tiles': vectorTileLayer,
-        'Loading Tiles': progressLayer
+        'Loading Tiles': progressLayer,
+        'Debug': debugLayer
     }).addTo(map);
     baseLayer.addTo(map);
 
