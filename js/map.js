@@ -212,7 +212,7 @@ function init() {
             bindHover(feature, layer);
             bindPopup(feature, layer);
             layer.on('add', function(evt) {
-                setPathVisibility(evt.target._container, visibility);
+                setPathVisibility(evt.target._path, visibility);
             });
         }
     };
