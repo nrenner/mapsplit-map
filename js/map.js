@@ -51,7 +51,6 @@ var updateVisibility = function(aVisibility) {
         for (var i = 0; i < children.length; i++) {
             setPathVisibility(children[i], aVisibility);
         }
-        container.setAttribute('pointer-events', 'painted');
     }
 };
 
@@ -120,19 +119,22 @@ function init() {
         color: "#000",
         weight: 1,
         opacity: 1,
-        fillOpacity: 0.8
+        fillOpacity: 0.8,
+        pointerEvents: 'painted'
     };
     var lineStyle = {
         weight: 4,
         opacity: 0.7,
-        color: colors.line
+        color: colors.line,
+        pointerEvents: 'painted'
     };
     var polygonStyle = {
         weight: 2,
         color: "#999",
         opacity: 1,
         fillColor: colors.polygon,
-        fillOpacity: 0.5
+        fillOpacity: 0.5,
+        pointerEvents: 'painted'
     };
     var styles = {
         node: pointStyle,
