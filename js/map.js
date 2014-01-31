@@ -32,6 +32,8 @@ var landuse = true;
  * @param {string} 'visible' | 'hidden'
  */
 var updateVisibility = function(aVisibility) {
+    var container = map.getRenderer(vectorTileLayer)._container;
+
     visibility = aVisibility;
     if (visibility === 'hidden') {
         activateBaseLayer();
@@ -40,16 +42,16 @@ var updateVisibility = function(aVisibility) {
     }
     
     if (L.Path.CANVAS) {
-        map._pathRoot.style.visibility = aVisibility;
+        container.style.visibility = aVisibility;
     } else {
         // does not work as expected in Chrome (v26): 
         // when svg root is hidden, setting visible on child has no effect
         //map._pathRoot.setAttribute('visibility', visibility);
-        var children = map._pathRoot.childNodes;
+        var children = container.childNodes;
         for (var i = 0; i < children.length; i++) {
             setPathVisibility(children[i], aVisibility);
         }
-        map._pathRoot.setAttribute('pointer-events', 'painted');
+        container.setAttribute('pointer-events', 'painted');
     }
 };
 
