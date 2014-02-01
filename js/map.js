@@ -152,7 +152,7 @@ function init() {
     var bindHover = function(feature, layer) {
         layer.on('mouseover', function(evt) {
             if (!this.defaultOptions) {
-                this.defaultOptions = this.options;
+                this.defaultOptions = L.Util.extend({}, this.options);
             }
             this.setStyle(getHoverStyle(this));
             setPathVisibility(this._path, 'visible');
@@ -168,9 +168,9 @@ function init() {
         layer.on('mouseout', function(evt) {
             // TODO resetStyle for L.OSM.DataLayer? (has styles instead of style)
             //layer.resetStyle(evt.target);
-            L.Util.extend(this.options, this.defaultOptions);
+            L.setOptions(this, this.defaultOptions);
             this.setStyle(this.options);
-            setPathVisibility(this._path, 'inherit');
+            setPathVisibility(this._path, visibility);
         }, layer);
     };
 
