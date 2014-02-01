@@ -96,6 +96,9 @@ function init() {
         // ignored by MiniMap > reset setView in minimap.js
         //reset: true,
         //animate: false
+        // TODO workaround: map and MiniMap cannot share singleton root container 
+        // (L.SVG.instance in Map.getRenderer in Renderer.js)
+        renderer: L.svg()
     });
     map.setView([52.4859, -1.88935], 16);
     //map.addControl(new L.Control.ZoomInfo());
