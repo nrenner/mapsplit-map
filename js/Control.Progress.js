@@ -43,8 +43,7 @@ L.Control.Progress = L.Control.extend({
         this._layer.on('loading', this._onLoading, this);
         this._layer.on('load', this._onLoad, this);
         this._layer.on('tileload', this._onTileLoad, this);
-        // L.TileLayer.Vector events
-        this._layer.on('tileloading', this._onTileLoading, this);
+        this._layer.on('tileloadstart', this._onTileLoading, this);
         this._layer.on('tileerror', this._onTileLoad, this);
         this._layer.on('tileabort', this._onTileLoad, this);
 
@@ -55,7 +54,7 @@ L.Control.Progress = L.Control.extend({
         this._layer.off('loading', this._onLoading, this);
         this._layer.off('load', this._onLoad, this);
         this._layer.off('tileload', this._onTileLoad, this);
-        this._layer.off('tileloading', this._onTileLoading, this);
+        this._layer.off('tileloadstart', this._onTileLoading, this);
         this._layer.off('tileerror', this._onTileLoad, this);
         this._layer.off('tileabort', this._onTileLoad, this);
     },
