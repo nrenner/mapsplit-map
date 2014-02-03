@@ -15,7 +15,11 @@ Very alpha and inefficient right now, so it's slow and might also crash your Bro
 
 TBD
 
-## Licenses
+## License
+
+Copyright (c) 2014 Norbert Renner, licensed under the [MIT License (MIT)](LICENSE)
+
+## Credits and Licenses
 
 TBD
 
