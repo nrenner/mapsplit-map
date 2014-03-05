@@ -13,6 +13,19 @@ require('./Control.Progress');
 require('./PbfWorker.js');
 require('./Path._updatePathViewport.js');
 
+// extract MapCSS parser from Overpass Turbo, originally from iD
+// http://www.openstreetmap.org/user/tyr_asd/diary/19043
+//require('../bower_components/overpass-ide/js/jsmapcss/styleparser.js');
+window.styleparser = {};
+require('../bower_components/overpass-ide/js/jsmapcss/Condition.js');
+require('../bower_components/overpass-ide/js/jsmapcss/Rule.js');
+require('../bower_components/overpass-ide/js/jsmapcss/RuleChain.js');
+require('../bower_components/overpass-ide/js/jsmapcss/Style.js');
+require('../bower_components/overpass-ide/js/jsmapcss/StyleChooser.js');
+require('../bower_components/overpass-ide/js/jsmapcss/StyleList.js');
+require('../bower_components/overpass-ide/js/jsmapcss/RuleSet.js');
+require('./MapCSS.js');
+
 var popup = require('./popup.js');
 var miniMap = require('./minimap.js');
     
@@ -25,6 +38,8 @@ var layerControl;
 var visibility = 'visible';
 var baseLayerActive = null;
 var landuse = true;
+// Vector layer of the currently open popup, null if none.
+var activePopupLayer = null;
 
 /**
  * Changes the visibility for all features (supporting hover only)
@@ -108,56 +123,27 @@ function init() {
         attribution: 'map &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
 
-    var colors = {
-        // Leaflet colors (http://leafletjs.com/examples/geojson.html)
-        polygon: '#b0de5c',
-        line: '#0033ff',
-        point: '#ff7800',
-        hover: 'red'
-    };
+    function resetStyle(layer, highlight) {
+        var style = layer.feature.__style;
+        if (style) {
+            delete layer.feature.__style;
+        } else {
+            // re-call style handler to eventually modify the style of the clicked feature
+            style = vectorOptions.style(layer.feature, highlight);
+        }
+        L.extend(style, {
+            pointerEvents: 'painted'
+        });
+        if (typeof layer.eachLayer !== "function") {
+            if (typeof layer.setStyle === "function")
+                layer.setStyle(style); // other objects (pois, ways)
+        } else
+            layer.eachLayer(function(l) {l.setStyle(style);}); // for multipolygons!
+    }
 
-    var pointStyle = {
-        radius: 4,
-        fillColor: colors.point,
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8,
-        pointerEvents: 'painted'
-    };
-    var lineStyle = {
-        weight: 4,
-        opacity: 0.7,
-        color: colors.line,
-        pointerEvents: 'painted'
-    };
-    var polygonStyle = {
-        weight: 2,
-        color: "#999",
-        opacity: 1,
-        fillColor: colors.polygon,
-        fillOpacity: 0.5,
-        pointerEvents: 'painted'
-    };
-    var styles = {
-        node: pointStyle,
-        way: lineStyle,
-        area: polygonStyle
-    };
-
-    var getHoverStyle = function(layer) {
-        return {
-            weight: layer.options.weight + 1,
-            color: colors.hover,
-            fillColor: colors.hover
-        };
-    };
     var bindHover = function(feature, layer) {
         layer.on('mouseover', function(evt) {
-            if (!this.defaultOptions) {
-                this.defaultOptions = L.Util.extend({}, this.options);
-            }
-            this.setStyle(getHoverStyle(this));
+            resetStyle(layer, true);
             setPathVisibility(this._path, 'visible');
 
             // lazy label binding for better performance
@@ -171,8 +157,11 @@ function init() {
         layer.on('mouseout', function(evt) {
             // TODO resetStyle for L.OSM.DataLayer? (has styles instead of style)
             //layer.resetStyle(evt.target);
-            L.setOptions(this, this.defaultOptions);
-            this.setStyle(this.options);
+
+            // already selected for popup?
+            if (!(activePopupLayer && L.stamp(layer) === L.stamp(activePopupLayer))) {
+               resetStyle(layer, false);
+            }
             setPathVisibility(this._path, visibility);
         }, layer);
     };
@@ -187,38 +176,68 @@ function init() {
         }, layer);
     };
 
-    function allKeys(tags, start) {
-        for (key in tags) {
-            if (!(start === key.substr(0, start.length))) {
-                return false;
-            }
+    map.on("popupopen popupclose",function(e) {
+        if (typeof e.popup._source !== "undefined") {
+            var layer = e.popup._source;
+            var highlight = e.type === "popupopen";
+            activePopupLayer = highlight ? layer : null;
+            resetStyle(layer, highlight);
         }
-        return true;
+    });
+
+    function mockOsmtogeojsonFeature(feature) {
+        // TODO hack for MapCSS because of difference in osmtogeojson and leaflet-osm derived features
+        if (!feature.properties) {
+            feature.properties = feature;
+            feature.properties.relations = [];
+            var geometryType = null;
+            if (feature.type === 'node') {
+                geometryType = 'Point';
+            } else {
+                geometryType = feature.area ? 'Polygon' : 'LineString';
+            }
+            feature.geometry = { type: geometryType };
+        }
     }
-    
+
     // true keeps feature, false discards
     var filter = function(feature) {
+        mockOsmtogeojsonFeature(feature);
+
+        var style = vectorOptions.style(feature);
+        // pass style to resetStyle (onEachFeature)
+        feature.__style = style;
+
         var tags = feature.tags,
             noTags = Object.keys(tags).length === 0;
-        return (map.getZoom() >= 17 
-            || !(noTags || tags.building || allKeys(tags, 'building') || allKeys(tags, 'roof:') 
-                || allKeys(tags, 'addr:') || tags.natural === 'tree' || tags.highway === 'street_lamp'
-                || tags.barrier === 'fence' || tags['building:demolished'] === 'yes'))
-            && (map.getZoom() >= 15 || !(feature.type === 'node') || tags.place)
+
+        return style !== null
             && (landuse || !(feature.area && (tags.landuse || tags.natural || tags.leisure)));
     };
 
     var vectorOptions = {
+        // styles + pointToLayer options set later by MapCSS
         filter: filter,
-        styles: styles,
         onEachFeature: function(feature, layer) {
             bindHover(feature, layer);
             bindPopup(feature, layer);
             layer.on('add', function(evt) {
                 setPathVisibility(evt.target._path, visibility);
             });
+            
+            // TODO style/setStyle should be called in addData, but leaflet-osm
+            // passes option.styles property to constructor
+            resetStyle(layer);
         }
     };
+                         
+    var mapCSSParser = new L.MapCSS(map, {
+        // no default style to filter out non-matching features, see filter function
+        defaultStyle: ""
+    });
+    var mapcss = L.MapCSS.load('mapcss/default.mapcss'); //default test
+    mapCSSParser.parse(mapcss);
+    mapCSSParser.extendWithStyleOptions(vectorOptions);
 
     var tileOptions = {
         // remove tiles outside viewport

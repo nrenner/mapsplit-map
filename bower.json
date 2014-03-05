@@ -8,6 +8,7 @@
   ],
   "dependencies": {
     "leaflet": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-master.zip",
-    "Leaflet.label": "vectors2"
+    "Leaflet.label": "vectors2",
+    "overpass-ide": "tyrasd/overpass-ide#master"
   }
 }

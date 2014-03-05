@@ -1,0 +1,66 @@
+/*
+ * various tests + templates
+ */
+
+/* Figure-ground diagram (de: Schwarzplan)*/
+/* TODO shop, amenity,...? */
+area[building] {
+  width: 1;
+  color: black;
+  fill-color: black;
+  opacity: 1;
+  fill-opacity: 1;
+}
+
+/* bus_stop + turning_circle
+
+node[highway=bus_stop],
+node[highway=turning_circle] {
+  symbol-size: 6;
+  fill-color: lightblue;
+  width: 2;
+  opacity: 1;
+  fill-opacity: 1;
+}
+
+node|z13-14[highway=bus_stop],
+node|z13-14[highway=turning_circle] {
+  symbol-size: 3;
+}
+
+node|z16-19[highway=bus_stop],
+node|z16-19[highway=turning_circle]{
+  symbol-size: 12;
+  fill-opacity: 0.2;
+}
+
+node[highway=turning_circle] {
+  fill-color: orangered;
+}
+*/
+
+
+/* bus_stop
+
+node[highway=bus_stop] {
+  symbol-size: 6;
+  fill-color: lightblue;
+  width: 2;
+  opacity: 1;
+  fill-opacity: 1;
+}
+
+node|z13-14[highway=bus_stop] {
+  symbol-size: 3;
+}
+
+node|z16-19[highway=bus_stop] {
+  symbol-size: 12;
+  fill-opacity: 0.2;
+}
+*/
+
+/*
+node[amenity=pub], 
+area[amenity=pub] {
+*/
