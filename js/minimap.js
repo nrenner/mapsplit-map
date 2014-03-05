@@ -32,8 +32,6 @@ function init(map) {
         width: 164,
         height: 164
     }).addTo(map);
-    miniMap._container.parentNode.removeChild(miniMap._container);
-    document.getElementById('minimap').appendChild(miniMap._container);
 
     // tiles/bounds.js to display data extract bbox
     if (bounds) {

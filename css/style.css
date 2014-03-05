@@ -123,9 +123,3 @@ div.field {
     width: 100%;
     pointer-events: none;
 }
-
-#minimap {
-    position: absolute;
-    bottom: 0px;
-    left: 20px;
-}
