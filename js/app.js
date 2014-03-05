@@ -8,7 +8,9 @@ var mm = require('./map.js');
 var map = mm.map,
     oldZoom = null,
     oldLanduse = true,
-    styles = {};
+    styles = {
+        'custom': ''
+    };
 
 function updateVisibility(evt) {
     var ele = evt.target || evt.srcElement;
@@ -22,11 +24,27 @@ function handleLanduse(evt) {
 }
 
 function handleStyle(evt) {
-    var name = this.value;
+    var name = this.value,
+        mapcss = "";
     if (!styles[name]) {
         styles[name] = mm.loadStyle(name);
     }
-    mm.applyStyle(styles[name]);
+    mapcss = styles[name];
+    updateMapCSS(mapcss, name !== 'custom');
+    mm.applyStyle(mapcss);
+}
+
+function handleApply(evt) {
+    var mapcss = document.getElementById('mapcss').value;
+    styles['custom'] = mapcss;
+    mm.applyStyle(mapcss);
+}
+
+function updateMapCSS(mapcss, disabled) {
+    var mapcssEle = document.getElementById('mapcss');
+    mapcssEle.value = mapcss;
+    mapcssEle.disabled = disabled;
+    document.getElementById('apply').disabled = disabled;
 }
 
 function updateLanduse() {
@@ -62,7 +80,10 @@ function init() {
     }
     
     document.getElementById('landuse').onclick = handleLanduse;
+
     document.getElementById('style').onchange = handleStyle;
+    document.getElementById('apply').onclick = handleApply;
+    updateMapCSS(mm.mapcss, true);
 
     mm.map.on('zoomstart', function() {
         oldZoom = map.getZoom();

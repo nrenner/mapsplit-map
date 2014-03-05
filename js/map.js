@@ -42,6 +42,7 @@ var landuse = true;
 // Vector layer of the currently open popup, null if none.
 var activePopupLayer = null;
 var mapCSSParser;
+var mapcss;
 
 /**
  * Changes the visibility for all features (supporting hover only)
@@ -105,7 +106,8 @@ var loadStyle = function(name) {
     return L.MapCSS.load(url); 
 };
 
-var applyStyle = function(mapcss) {
+var applyStyle = function(aMapcss) {
+    mapcss = aMapcss;
     mapCSSParser.parse(mapcss);
     vectorTileLayer.redraw();
 };
@@ -250,7 +252,7 @@ function init() {
         // no default style to filter out non-matching features, see filter function
         defaultStyle: ""
     });
-    var mapcss = loadStyle('default'); //L.MapCSS.load('mapcss/default.mapcss'); //default test
+    mapcss = loadStyle('default');
     mapCSSParser.parse(mapcss);
     mapCSSParser.extendWithStyleOptions(vectorOptions);
 
@@ -349,3 +351,4 @@ exports.activateBaseLayer = activateBaseLayer;
 exports.restoreBaseLayer = restoreBaseLayer;
 exports.loadStyle = loadStyle;
 exports.applyStyle = applyStyle;
+exports.mapcss = mapcss;

@@ -13,14 +13,14 @@ body {
     position: fixed;
     top: 20px;
     right: 0px;
-    width: 200px;
+    width: 250px;
 }
 
 #map {
     position: absolute;
     top: 20px;
     left: 20px;
-    right: 200px;
+    right: 250px;
 }
 #panel, #map {
     /*
@@ -113,6 +113,17 @@ div.field {
     margin-left: 1px;
     float: left;
     width: 21px;
+}
+
+select#style,button#apply {
+    width: 100%;
+}
+textarea#mapcss {
+    width: 97%;
+    height: 177px;
+    margin-top: 3px;
+    font-size: 10px;
+    font-family: "Courier New", Courier, monospace;
 }
 
 .leaflet-control-zoomslider-body-overlay {

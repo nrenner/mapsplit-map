@@ -36,10 +36,11 @@
                         <input type="checkbox" id="landuse" checked="checked">
                     </div>
                     <div class="label">
-                        show areas (landuse, ...)
+                        show areas (landuse, ...)<br>
                         (auto-hide &gt;= z17)
                     </div>
                 </div>
+
                 <p>
                 MapCSS style (experimental):
                 <select id="style">
@@ -47,18 +48,13 @@
                     <option value="test">test</option>
                     <option value="custom">&lt;custom&gt;</option>
                 </select>
+                <textarea id="mapcss"></textarea>
+                <button id="apply">apply</button>
+
                 <div class="infotext">
-                <p class="auto-filter-info">
-                Zoom in for details:
-                <ul>
-                    <li>z15: nodes (except place)</li>
-                    <li>z17: building, addr, tree, ...</li>
-                </ul>
-                </p>
-                <p>
                 <a href="https://github.com/nrenner/mapsplit-map">GitHub</a>
                  | <a href="http://www.openstreetmap.org/user/ikonor/diary">blog</a>
-                 | <a href="https://github.com/nrenner/mapsplit-map#licenses">credits</a><br>
+                 | <a href="https://github.com/nrenner/mapsplit-map#licenses">credits</a> &middot; 
                  contact: <a href="https://twitter.com/ikonor">Twitter</a>, 
                  <a href="http://www.openstreetmap.org/message/new/ikonor">OSM</a>
                 </p>
