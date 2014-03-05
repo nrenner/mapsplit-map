@@ -25,6 +25,7 @@ require('../bower_components/overpass-ide/js/jsmapcss/StyleChooser.js');
 require('../bower_components/overpass-ide/js/jsmapcss/StyleList.js');
 require('../bower_components/overpass-ide/js/jsmapcss/RuleSet.js');
 require('./MapCSS.js');
+var styleURLs = require('../mapcss/styles.js');
 
 var popup = require('./popup.js');
 var miniMap = require('./minimap.js');
@@ -40,6 +41,7 @@ var baseLayerActive = null;
 var landuse = true;
 // Vector layer of the currently open popup, null if none.
 var activePopupLayer = null;
+var mapCSSParser;
 
 /**
  * Changes the visibility for all features (supporting hover only)
@@ -92,6 +94,19 @@ var setPathVisibility = function(pathEle, aVisibility) {
 
 var showLanduse = function(aLanduse) {
     landuse = aLanduse;
+    vectorTileLayer.redraw();
+};
+
+var loadStyle = function(name) {
+    var url = styleURLs[name];
+    if (!url) {
+        return null;
+    }
+    return L.MapCSS.load(url); 
+};
+
+var applyStyle = function(mapcss) {
+    mapCSSParser.parse(mapcss);
     vectorTileLayer.redraw();
 };
 
@@ -231,11 +246,11 @@ function init() {
         }
     };
                          
-    var mapCSSParser = new L.MapCSS(map, {
+    mapCSSParser = new L.MapCSS(map, {
         // no default style to filter out non-matching features, see filter function
         defaultStyle: ""
     });
-    var mapcss = L.MapCSS.load('mapcss/default.mapcss'); //default test
+    var mapcss = loadStyle('default'); //L.MapCSS.load('mapcss/default.mapcss'); //default test
     mapCSSParser.parse(mapcss);
     mapCSSParser.extendWithStyleOptions(vectorOptions);
 
@@ -332,3 +347,5 @@ exports.showLanduse = showLanduse;
 exports.map = map;
 exports.activateBaseLayer = activateBaseLayer;
 exports.restoreBaseLayer = restoreBaseLayer;
+exports.loadStyle = loadStyle;
+exports.applyStyle = applyStyle;
