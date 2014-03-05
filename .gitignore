@@ -1,6 +1,7 @@
 bower_components/
 node_modules/
 bundle.js
+.bundle.js
 bundle-worker.js
 nbproject/
 download/
