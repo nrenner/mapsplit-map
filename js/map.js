@@ -12,7 +12,7 @@ require('./Control.Progress');
 // TODO revisit (replaced with app.updateZoomHint)
 //require('./Control.ZoomInfo.js');
 require('./PbfWorker.js');
-require('./Path._updatePathViewport.js');
+require('./patch/Renderer.js');
 
 // extract MapCSS parser from Overpass Turbo, originally from iD
 // http://www.openstreetmap.org/user/tyr_asd/diary/19043
@@ -128,8 +128,7 @@ function init() {
         // TODO workaround: map and MiniMap cannot share singleton root container 
         // (L.SVG.instance in Map.getRenderer in Renderer.js)
         renderer: L.svg({
-            // enlarge vector clip bounds, restricted by tile bounds, 
-            // see Path._updatePathViewport.js
+            // enlarge vector clip bounds, restricted by tile bounds, see patch/Renderer.js
             padding: 1
         })
     });
@@ -301,7 +300,7 @@ function init() {
     });
     */
 
-    // hack for Path_updatePathViewport.js
+    // hack for patch/Renderer.js
     map._vectorTileLayer = vectorTileLayer;
 
     map.addControl(new L.Control.Progress(vectorTileLayer, {div: 'progress-container'}));
