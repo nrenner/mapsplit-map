@@ -73,8 +73,9 @@ table tr td:first-child {
     background-color: rgba(255, 255, 255, 0.7);
 }
 #zoomhint {
+    z-index: 1000;
     padding: 7px;
-} 
+}
 .progress {
     padding: 5px;
 }

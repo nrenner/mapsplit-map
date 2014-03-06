@@ -9,6 +9,7 @@ require('../lib/Leaflet.zoomslider/src/L.Control.Zoomslider.js');
 require('./L.Control.Zoomslider-patch.js');
 require('../lib/Leaflet.zoomdisplay/leaflet.zoomdisplay.js');
 require('./Control.Progress');
+// TODO revisit (replaced with app.updateZoomHint)
 //require('./Control.ZoomInfo.js');
 require('./PbfWorker.js');
 require('./Path._updatePathViewport.js');
