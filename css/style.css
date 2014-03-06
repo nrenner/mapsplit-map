@@ -22,11 +22,18 @@ body {
     left: 20px;
     right: 250px;
 }
-#panel, #map {
-    /*
-    bottom: 20px;
-    */
+#panel {
     height: 400px;
+}
+#footer {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    text-align: center;
+    padding-top: 5px;
+}
+#footer a {
+    color: black;
 }
 
 .leaflet-container {
@@ -102,7 +109,7 @@ p.subtitle {
 p.auto-filter-info {
     margin: 1.12em 0 0 0;
 }
-.infotext, a {
+.infotext, #panel a {
     color: #666;
 }
 ul {

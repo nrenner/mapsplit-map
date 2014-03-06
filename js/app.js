@@ -72,6 +72,23 @@ function updateZoomHint() {
     }
 }
 
+function handleMapResize(evt) {
+    var large = this.id === 'largemap';
+
+    var mapEle = document.getElementById('map');
+    mapEle.style.height = large ? '' : '400px';
+    mapEle.style.bottom = large ? '20px' : '';
+
+    var footer = document.getElementById('footer');
+    footer.style.top = large ? '' : '420px';
+    footer.style.height = large ? '20px' : '';
+    
+    document.getElementById('largemap').classList.toggle('hidden');
+    document.getElementById('smallmap').classList.toggle('hidden');
+    
+    map.invalidateSize();
+}
+
 function init() {
     var radios = document.getElementsByName('visibility');
     for (var i = 0; i < radios.length; i++) {
@@ -83,6 +100,16 @@ function init() {
     document.getElementById('style').onchange = handleStyle;
     document.getElementById('apply').onclick = handleApply;
     updateMapCSS(mm.mapcss, true);
+
+    function registerMapResize(id) {
+        var link = document.getElementById(id);
+        L.DomEvent
+            .on(link, 'mousedown dblclick', L.DomEvent.stopPropagation)
+            .on(link, 'click', L.DomEvent.stop)
+            .on(link, 'click', handleMapResize);
+    }
+    registerMapResize('largemap');
+    registerMapResize('smallmap');
 
     mm.map.on('zoomstart', function() {
         oldZoom = map.getZoom();
