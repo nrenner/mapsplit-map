@@ -127,10 +127,7 @@ function init() {
         //animate: false
         // TODO workaround: map and MiniMap cannot share singleton root container 
         // (L.SVG.instance in Map.getRenderer in Renderer.js)
-        renderer: L.svg({
-            // enlarge vector clip bounds, restricted by tile bounds, see patch/Renderer.js
-            padding: 1
-        })
+        renderer: L.svg()
     });
     map.setView([52.4859, -1.88935], 16);
     //map.addControl(new L.Control.ZoomInfo());
@@ -232,6 +229,16 @@ function init() {
             && (landuse || !(feature.area && (tags.landuse || tags.natural || tags.leisure)));
     };
 
+
+    // for clipping/padding in patch/Renderer.js
+    function getTileSize() {
+        // when vector layer disabled
+        if (!vectorTileLayer || !vectorTileLayer._map) {
+            return null;
+        }
+        return vectorTileLayer._getTileSize();
+    }
+
     var vectorOptions = {
         // styles + pointToLayer options set later by MapCSS
         filter: filter,
@@ -245,7 +252,12 @@ function init() {
             // TODO style/setStyle should be called in addData, but leaflet-osm
             // passes option.styles property to constructor
             resetStyle(layer);
-        }
+        },
+        renderer: L.svg({
+            // enlarge vector clip bounds, restricted by tile bounds, see patch/Renderer.js
+            padding: 1,
+            getTileSize: getTileSize
+        })
     };
                          
     mapCSSParser = new L.MapCSS(map, {
@@ -299,9 +311,6 @@ function init() {
         console.log('----- moveend -----');
     });
     */
-
-    // hack for patch/Renderer.js
-    map._vectorTileLayer = vectorTileLayer;
 
     map.addControl(new L.Control.Progress(vectorTileLayer, {div: 'progress-container'}));
     map.addLayer(vectorTileLayer);

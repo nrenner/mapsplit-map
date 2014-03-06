@@ -12,11 +12,10 @@ L.Renderer.include({
             max = min.add(size.multiplyBy(1 + p * 2)).round(),
             bounds = new L.Bounds(min, max);
 
-        if (this._map._vectorTileLayer) {
+        if (this.options.getTileSize && this.options.getTileSize()) {
             // first part derived from L.GridLayer._update
             var viewBounds = this._map.getPixelBounds(),
-                // hack: _vectorTileLayer set by application on map init
-                tileSize = this._map._vectorTileLayer._getTileSize(),
+                tileSize = this.options.getTileSize(),
                 // tile coordinates range for the current view
                 tileBounds = L.bounds(
                     viewBounds.min.divideBy(tileSize).floor(),
