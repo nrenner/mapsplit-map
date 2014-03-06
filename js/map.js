@@ -115,10 +115,6 @@ var applyStyle = function(aMapcss) {
 
 function init() {
 
-    // enlarge vector clip bounds, restricted by tile bounds, 
-    // see Path._updatePathViewport.js
-    L.Path.CLIP_PADDING = 1;
-    
     map = L.map('map', {
         minZoom: 5,
         maxZoom: 19,
@@ -131,7 +127,11 @@ function init() {
         //animate: false
         // TODO workaround: map and MiniMap cannot share singleton root container 
         // (L.SVG.instance in Map.getRenderer in Renderer.js)
-        renderer: L.svg()
+        renderer: L.svg({
+            // enlarge vector clip bounds, restricted by tile bounds, 
+            // see Path._updatePathViewport.js
+            padding: 1
+        })
     });
     map.setView([52.4859, -1.88935], 16);
     //map.addControl(new L.Control.ZoomInfo());
@@ -300,7 +300,7 @@ function init() {
         console.log('----- moveend -----');
     });
     */
-    
+
     // hack for Path_updatePathViewport.js
     map._vectorTileLayer = vectorTileLayer;
 
