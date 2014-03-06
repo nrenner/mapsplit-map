@@ -2,7 +2,6 @@
  * Side panel Controls
  */
 
-require('./optimize.js');
 var mm = require('./map.js');
 
 var map = mm.map,
