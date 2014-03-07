@@ -44,6 +44,7 @@ var landuse = true;
 var activePopupLayer = null;
 var mapCSSParser;
 var mapcss;
+var renderers;
 
 /**
  * Changes the visibility for all features (supporting hover only)
@@ -51,7 +52,7 @@ var mapcss;
  * @param {string} 'visible' | 'hidden'
  */
 var updateVisibility = function(aVisibility) {
-    var container = map.getRenderer(vectorTileLayer)._container;
+    var container = getRenderer()._container;
 
     visibility = aVisibility;
     if (visibility === 'hidden') {
@@ -60,7 +61,7 @@ var updateVisibility = function(aVisibility) {
         restoreBaseLayer();
     }
     
-    if (L.Path.CANVAS) {
+    if (container.tagName === "CANVAS") {
         container.style.visibility = aVisibility;
     } else {
         // does not work as expected in Chrome (v26): 
@@ -110,6 +111,20 @@ var loadStyle = function(name) {
 var applyStyle = function(aMapcss) {
     mapcss = aMapcss;
     mapCSSParser.parse(mapcss);
+    vectorTileLayer.redraw();
+};
+
+var getRenderer = function() {
+    return vectorTileLayer.vectorOptions.renderer;
+};
+
+var setRenderer = function(renderer) {
+    vectorTileLayer.vectorOptions.renderer = renderer;
+};
+
+var updateRenderer = function(name) {
+    map.removeLayer(getRenderer());
+    setRenderer(renderers[name]);
     vectorTileLayer.redraw();
 };
 
@@ -229,6 +244,15 @@ function init() {
             && (landuse || !(feature.area && (tags.landuse || tags.natural || tags.leisure)));
     };
 
+    var rendererOptions = {
+        // enlarge vector clip bounds, restricted by tile bounds, see patch/Renderer.js
+        padding: 1,
+        getTileSize: getTileSize
+    };
+    renderers = {
+        'svg': L.svg(rendererOptions),
+        'canvas': L.canvas(rendererOptions)
+    };
 
     // for clipping/padding in patch/Renderer.js
     function getTileSize() {
@@ -253,11 +277,7 @@ function init() {
             // passes option.styles property to constructor
             resetStyle(layer);
         },
-        renderer: L.svg({
-            // enlarge vector clip bounds, restricted by tile bounds, see patch/Renderer.js
-            padding: 1,
-            getTileSize: getTileSize
-        })
+        renderer: renderers.svg
     };
                          
     mapCSSParser = new L.MapCSS(map, {
@@ -361,3 +381,4 @@ exports.restoreBaseLayer = restoreBaseLayer;
 exports.loadStyle = loadStyle;
 exports.applyStyle = applyStyle;
 exports.mapcss = mapcss;
+exports.updateRenderer = updateRenderer;

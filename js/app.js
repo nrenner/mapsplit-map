@@ -89,6 +89,10 @@ function handleMapResize(evt) {
     map.invalidateSize();
 }
 
+function updateRenderer(evt) {
+    mm.updateRenderer(this.value);
+}
+
 function init() {
     var radios = document.getElementsByName('visibility');
     for (var i = 0; i < radios.length; i++) {
@@ -96,6 +100,11 @@ function init() {
     }
     
     document.getElementById('landuse').onclick = handleLanduse;
+
+    var rendererRadios = document.getElementsByName('renderer');
+    for (var i = 0; i < rendererRadios.length; i++) {
+        rendererRadios[i].onclick = updateRenderer;
+    }
 
     document.getElementById('style').onchange = handleStyle;
     document.getElementById('apply').onclick = handleApply;
