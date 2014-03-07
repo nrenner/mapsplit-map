@@ -142,3 +142,7 @@ textarea#mapcss {
     width: 100%;
     pointer-events: none;
 }
+
+.leaflet-label {
+    pointer-events: none;
+}

@@ -42,6 +42,7 @@ var baseLayerActive = null;
 var landuse = true;
 // Vector layer of the currently open popup, null if none.
 var activePopupLayer = null;
+var activeHoverLayer = null;
 var mapCSSParser;
 var mapcss;
 var renderers;
@@ -123,7 +124,14 @@ var setRenderer = function(renderer) {
 };
 
 var updateRenderer = function(name) {
-    map.removeLayer(getRenderer());
+    var renderer = getRenderer();
+    map.removeLayer(renderer);
+    // TODO create new Renderer? / Canvas.onRemove?
+    if (renderer._layers) {
+        renderer._layers = {};
+    }
+    activeHoverLayer = null;
+
     setRenderer(renderers[name]);
     vectorTileLayer.redraw();
 };
@@ -172,13 +180,18 @@ function init() {
 
     var bindHover = function(feature, layer) {
         layer.on('mouseover', function(evt) {
+            if (activeHoverLayer) {
+                return;
+            }
+            activeHoverLayer = this;
+
             resetStyle(layer, true);
             setPathVisibility(this._path, 'visible');
 
             // lazy label binding for better performance
             // (registering less events + creating less objects on tile load)
             var popupContent = popup.getFeatureInfoHtml(this.feature);
-            if (!this._label) {
+            if (!this.label) {
                 this.bindLabel(popupContent);
                 this._showLabel(evt);
             }
@@ -187,11 +200,16 @@ function init() {
             // TODO resetStyle for L.OSM.DataLayer? (has styles instead of style)
             //layer.resetStyle(evt.target);
 
+            if (activeHoverLayer && L.stamp(this) === L.stamp(activeHoverLayer)) {
+                activeHoverLayer = null;
+            }
+
             // already selected for popup?
             if (!(activePopupLayer && L.stamp(layer) === L.stamp(activePopupLayer))) {
                resetStyle(layer, false);
             }
             setPathVisibility(this._path, visibility);
+            this.unbindLabel();
         }, layer);
     };
 
