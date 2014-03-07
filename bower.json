@@ -7,7 +7,7 @@
     "bower_components"
   ],
   "dependencies": {
-    "leaflet": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-master.zip",
+    "Leaflet": "Leaflet/Leaflet#master",
     "Leaflet.label": "vectors2",
     "overpass-ide": "tyrasd/overpass-ide#master"
   }
