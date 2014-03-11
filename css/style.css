@@ -58,6 +58,9 @@ table tr td:first-child {
     padding-bottom: 3px;
     font-weight: bold;
 }
+.entity_meta {
+    padding-top: 3px;
+}
 
 .hidden {
     display: none;
@@ -109,7 +112,7 @@ p.subtitle {
 p.auto-filter-info {
     margin: 1.12em 0 0 0;
 }
-.infotext, #panel a {
+.infotext, #panel a, .entity_meta {
     color: #666;
 }
 ul {

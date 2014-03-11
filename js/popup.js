@@ -7,6 +7,7 @@ var getFeatureInfoHtml = function(feature) {
        infoHtml += "<tr><td>" + key + "</td><td>" + feature.tags[key] + "</td></tr>";
     }
     infoHtml += "</table>";
+    infoHtml += "<div class='entity_meta'>" + new Date(feature.timestamp).toLocaleString() + " &middot; v" + feature.version + "</div>";
     return infoHtml;
 };
 
