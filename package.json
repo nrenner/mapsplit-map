@@ -8,6 +8,7 @@
         "leaflet-tilelayer-vector": "0.1.0"
     },
     "scripts": {
-        "watch": "watchify . -o bundle.js -d -v"
+        "browserify": "browserify . -o bundle.js --bare && browserify -e ./js/worker.js -o bundle-worker.js --bare",
+        "watch": "watchify . -o bundle.js --bare -d -v"
     }
 }
