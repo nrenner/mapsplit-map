@@ -29,7 +29,7 @@ function handleStyle(evt) {
         styles[name] = mm.loadStyle(name);
     }
     mapcss = styles[name];
-    updateMapCSS(mapcss, name !== 'custom');
+    updateMapCSS(mapcss, false); //name !== 'custom');
     mm.applyStyle(mapcss);
 }
 
@@ -108,7 +108,7 @@ function init() {
 
     document.getElementById('style').onchange = handleStyle;
     document.getElementById('apply').onclick = handleApply;
-    updateMapCSS(mm.mapcss, true);
+    updateMapCSS(mm.mapcss, false);
 
     function registerMapResize(id) {
         var link = document.getElementById(id);
