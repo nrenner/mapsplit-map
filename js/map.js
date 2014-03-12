@@ -316,6 +316,8 @@ function init() {
         // web worker
         workerFactory: L.pbfWorker,
         //workerFactory: L.noWorker,
+        // no caching as we delete 'parsed' to reduce memory, see tileload handler below
+        tileCacheFactory: L.tileCacheNone,
         // fixed zoom level 13 for Mapsplit tiles (resize all other levels)
         serverZooms: [13],
         minZoom: 13,
@@ -325,6 +327,13 @@ function init() {
     };
     
     vectorTileLayer = new L.TileLayer.Vector.Unclipped("tiles/{x}_{y}.pbf", tileOptions, vectorOptions);
+
+    // reduce memory by removing the parsed entities once added as vectors, 
+    // this prevents caching though, see tileCacheFactory option
+    vectorTileLayer.on('tileload', function(evt) {
+        delete evt.tile.parsed;
+    });
+
     /*
     vectorTileLayer.on('loading', function() {
         console.time('load');
