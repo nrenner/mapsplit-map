@@ -334,22 +334,6 @@ function init() {
         delete evt.tile.parsed;
     });
 
-    /*
-    vectorTileLayer.on('loading', function() {
-        console.time('load');
-        timer.reset();
-    });
-    vectorTileLayer.on('load', function() {
-        console.timeEnd('load');
-        timer.report();
-        //var tilesKeys = Object.keys(vectorTileLayer._tiles);
-        //console.log('_tiles (' + tilesKeys.length + '): ' + tilesKeys);
-    });
-    map.on('moveend', function() {
-        console.log('----- moveend -----');
-    });
-    */
-
     map.addControl(new L.Control.Progress(vectorTileLayer, {div: 'progress-container'}));
     map.addLayer(vectorTileLayer);
 
@@ -373,20 +357,6 @@ function init() {
 
     // MiniMap (overview map)
     miniMap.init(map);
-    
-    /*
-    // debug layer, from: 
-    // http://blog.mathieu-leplatre.info/leaflet-tiles-in-lambert-93-projection-2154.html
-    tileDebugLayer = L.tileLayer.canvas();
-    tileDebugLayer.drawTile = function(canvas, tilePoint, zoom) {
-        var ctx = canvas.getContext('2d');
-        ctx.strokeStyle = ctx.fillStyle = "red";
-        ctx.rect(0,0, 256,256);
-        ctx.stroke();
-        ctx.fillText('' + tilePoint.x + '_' + tilePoint.y,5,10);
-    };
-    map.addLayer(tileDebugLayer);
-    */
 }
 
 init();
