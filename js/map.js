@@ -14,6 +14,7 @@ require('./Control.Progress');
 require('./PbfWorker.js');
 require('./patch/Renderer.js');
 require('./patch/Canvas.js');
+require('./patch/Permalink.Layer.js');
 
 // extract MapCSS parser from Overpass Turbo, originally from iD
 // http://www.openstreetmap.org/user/tyr_asd/diary/19043
