@@ -5,6 +5,8 @@ L.PbfWorker = L.AbstractWorker.extend({
         maxWorkers: 2
     },
     
+    count: 0,
+    
     initialize: function () {
         this._queue = [];
         this._numActive = 0;    
@@ -17,50 +19,88 @@ L.PbfWorker = L.AbstractWorker.extend({
 
     _next: function() {
         var args;
+        //console.log('workers: ' + this._numActive + ' (' + this._queue.length + ')');
         if (this._numActive < this.options.maxWorkers && this._queue.length > 0) {
             this._numActive++;
             args = this._queue.shift();
             this._process(args.tile, args.callback);
         }
     },
-
+            
     _process: function(tile, callback) {
-        var worker, parsed;
+        var worker;
         if (typeof Worker === "function") {
             worker = new Worker(workerPath);
             tile._worker = worker;
+            tile._workerNum = ++this.count;
+
             worker.addEventListener('message', L.bind(function(e) {
-                parsed = JSON.parse(e.data.parsed);
-                e.data.parsed = null;
+                var parsed = null;
 
-                if (tile._worker) {
-                    tile._worker = null;
-                    tile.parsed = parsed;
-                    tile.datum = null;
-
-                    callback(tile);
+                if (e.data.event) {
+                    if (e.data.event === "tileresponse") {
+                        tile._workerRequesting = false;
+                    }
+                    this._log(tile, 'event ' + e.data.event + ' (delay ' + (Date.now() - e.data.time) + 'ms)');
+                } else if (e.data.log) {
+                    this._log(tile, 'debug ' + e.data.log + ' (delay ' + (Date.now() - e.data.time) + 'ms)');
+                } else if (e.data.aborted) {
+                    this._log(tile, 'aborted', true);
+                    this._numActive--;
+                    this._next();
                 } else {
-                    // tile has been unloaded, don't continue with adding
-                }
+                    this._log(tile, 'end' + (tile._aborting ? ' aborting' : ''));
+                    if (!e.data.err && !tile._aborting) {
+                        parsed = JSON.parse(e.data.parsed);
+                        e.data.parsed = null;
+                    }
 
-                parsed = null;
-                this._numActive--;
-                this._next();
-            },this), false);
+                    if (tile._worker && !tile._aborting) {
+                        tile._worker = null;
+                        tile.parsed = parsed;
+                        tile.datum = null;
+
+                        callback(e.data.err, tile);
+                    } else {
+                        // tile has been unloaded, don't continue with adding
+                        this._log(tile, 'aborted tile', true);
+                    }
+
+                    parsed = null;
+                    this._numActive--;
+                    this._next();
+                }
+            }, this), false);
+
             // tile.datum invalid after call (is transferred to worker) 
-            worker.postMessage(tile.datum, [tile.datum]);
+            //worker.postMessage({ url: tile.url, datum: tile.datum }, [tile.datum]);
+            if (tile.datum) {
+                worker.postMessage({ buffer: tile.datum }, [tile.datum]);
+            } else {
+                this._log(tile, 'url');
+                tile._workerRequesting = true;
+                worker.postMessage({ url: tile.url });
+            }
         } else {
-            callback(tile);
+            callback(null, tile);
         }
     },
     
     abort: function(tile) {
         if (tile._worker) {
-            tile._worker.terminate();
-            tile._worker = null;
-            this._numActive--;
+            if (tile._workerRequesting) {
+                this._log(tile, 'aborting', true);
+                tile._aborting = true;
+                tile._worker.postMessage({ abort: true });
+            } else {
+                tile._worker.terminate();
+                this._log(tile, 'terminated', true);
+                tile._worker = null;
+                this._numActive--;
+            }
         } else {
             this._remove(tile);
+            //console.log('worker   ' + ' ' + tile.key + ': ' + 'remove from queue');
         }
     },
 
@@ -78,6 +118,13 @@ L.PbfWorker = L.AbstractWorker.extend({
                 break;
             }
         }
+    },
+    
+    _log: function(tile, msg, error) {
+        /*
+        var s = 'worker ' + tile._workerNum + ' ' + tile.key + ': ' + msg;
+        error ? console.error(s) : console.log(s);
+        */
     }
 });
 
