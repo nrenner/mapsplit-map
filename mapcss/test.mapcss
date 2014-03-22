@@ -2,16 +2,6 @@
  * various tests + templates
  */
 
-/* Figure-ground diagram (de: Schwarzplan)*/
-/* TODO shop, amenity,...? */
-area[building] {
-  width: 1;
-  color: black;
-  fill-color: black;
-  opacity: 1;
-  fill-opacity: 1;
-}
-
 /* bus_stop + turning_circle
 
 node[highway=bus_stop],

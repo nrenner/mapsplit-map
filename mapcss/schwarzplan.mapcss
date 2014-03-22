@@ -1,0 +1,16 @@
+/* Figure-ground diagram (de: Schwarzplan)*/
+
+/* TODO support canvas (background-color)
+canvas {
+  fill-color: white;
+  fill-opacity: 1;
+}
+*/
+/* TODO shop, amenity,...? */
+area[building] {
+  width: 1;
+  color: black;
+  fill-color: black;
+  opacity: 1;
+  fill-opacity: 1;
+}
