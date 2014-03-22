@@ -26,10 +26,8 @@ tool (not included)
 by PedaB; [CC0 1.0](https://github.com/PedaB/mapsplit/blob/master/COPYING)
 
 components
-* [osm-pbf.js](https://github.com/nrenner/osm-pbf.js)  
-Copyright (c) 2013 Norbert Renner,  
-[vtp](https://github.com/bmander/vtp)  
-Copyright (c) 2012, Brandon Martin-Anderson and other contributors; [2-clause BSD License](https://github.com/nrenner/osm-pbf.js/blob/master/LICENSE)
+* [osm-read](https://github.com/marook/osm-read)  
+by Markus Peröbner; [LGPL](https://github.com/marook/osm-read/blob/master/COPYING)
 * [osm-pbf-leaflet](https://github.com/nrenner/osm-pbf-leaflet)  
 Copyright (c) 2013 Norbert Renner,  
 [leaflet-osm](https://github.com/jfirebaugh/leaflet-osm)  
