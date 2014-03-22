@@ -1,0 +1,79 @@
+/*
+ * Nightlife
+ */
+
+node[amenity=restaurant],
+node[amenity=cafe],
+node[amenity=pub],
+node[amenity=bar],
+node[amenity=nightclub] {
+  symbol-size: 6;
+  width: 2;
+  color: black;
+  opacity: 1;
+  fill-opacity: 1;
+}
+
+node|z13-14[amenity=restaurant],
+node|z13-14[amenity=cafe],
+node|z13-14[amenity=pub],
+node|z13-14[amenity=bar],
+node|z13-14[amenity=nightclub] {
+  symbol-size: 3;
+  width: 1;
+}
+node|z17-19[amenity=restaurant],
+node|z17-19[amenity=cafe],
+node|z16-19[amenity=pub],
+node|z17-19[amenity=bar],
+node|z17-19[amenity=nightclub] {
+  symbol-size: 12;
+  fill-opacity: 0.2;
+}
+
+area[amenity=restaurant],
+area[amenity=cafe],
+area[amenity=pub],
+area[amenity=bar],
+area[amenity=nightclub] {
+  width: 2;
+  color: black;
+  opacity: 1;
+  fill-opacity: 1;
+}
+
+area|z13-14[amenity=restaurant],
+area|z13-14[amenity=cafe],
+area|z13-14[amenity=pub],
+area|z13-14[amenity=bar],
+area|z13-14[amenity=nightclub] {
+  width: 1;
+}
+area|z17-19[amenity=restaurant],
+area|z17-19[amenity=cafe],
+area|z16-19[amenity=pub],
+area|z17-19[amenity=bar],
+area|z17-19[amenity=nightclub] {
+  fill-opacity: 0.2;
+}
+
+node[amenity=restaurant],
+area[amenity=restaurant] {
+  fill-color: #1b9e77;
+}
+node[amenity=cafe],
+area[amenity=cafe] {
+  fill-color: #d95f02;
+}
+node[amenity=pub],
+area[amenity=pub] {
+  fill-color: #7570b3;
+}
+node[amenity=bar],
+area[amenity=bar] {
+  fill-color: #e7298a;
+}
+node[amenity=nightclub],
+area[amenity=nightclub] {
+  fill-color: #66a61e;
+}
