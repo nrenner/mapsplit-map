@@ -2,7 +2,7 @@
  * various tests + templates
  */
 
-/* bus_stop + turning_circle
+/* bus_stop + turning_circle */
 
 node[highway=bus_stop],
 node[highway=turning_circle] {
@@ -27,7 +27,6 @@ node|z16-19[highway=turning_circle]{
 node[highway=turning_circle] {
   fill-color: orangered;
 }
-*/
 
 
 /* bus_stop
