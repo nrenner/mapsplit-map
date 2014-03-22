@@ -152,7 +152,8 @@ function init() {
         // (L.SVG.instance in Map.getRenderer in Renderer.js)
         renderer: L.svg()
     });
-    map.setView([52.4859, -1.88935], 16);
+
+    map.setView([52.51828, 13.37373], 15);
     //map.addControl(new L.Control.ZoomInfo());
 
     emptyBaseLayer = L.layerGroup();
