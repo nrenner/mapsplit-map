@@ -35,8 +35,16 @@ function handleStyle(evt) {
 
 function handleApply(evt) {
     var mapcss = document.getElementById('mapcss').value;
+    var messageEle = document.getElementById('message');
     styles['custom'] = mapcss;
-    mm.applyStyle(mapcss);
+    var error = mm.validateStyle(mapcss);
+    if (!error) {
+        messageEle.classList.add('hidden');
+        mm.applyStyle(mapcss);
+    } else {
+        messageEle.innerText = error.message;
+        messageEle.classList.remove('hidden');
+    }
 }
 
 function updateMapCSS(mapcss, disabled) {

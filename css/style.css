@@ -142,6 +142,11 @@ textarea#mapcss {
     font-family: "Courier New", Courier, monospace;
 }
 
+#message {
+    color: red;
+    margin-bottom: 8px;
+}
+
 .leaflet-control-zoomslider-body-overlay {
     position: absolute;
     top: 95px; /* 27 + 5 + ((19 - 13 + 1) * 9) */

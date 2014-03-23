@@ -65,8 +65,11 @@ L.MapCSS = L.Class.extend({
       }
     } catch(e) {
       user_mapcss = "";
-      fire("onStyleError", "<p>"+e.message+"</p>");
+      // @nrenner
+      //fire("onStyleError", "<p>"+e.message+"</p>");
+      return e;
     }
+    return null;
   },
 
   parse: function(user_mapcss) {

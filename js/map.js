@@ -110,6 +110,10 @@ var loadStyle = function(name) {
     return L.MapCSS.load(url); 
 };
 
+var validateStyle = function(aMapcss) {
+    return mapCSSParser.validate(aMapcss);
+}
+
 var applyStyle = function(aMapcss) {
     mapcss = aMapcss;
     mapCSSParser.parse(mapcss);
@@ -369,6 +373,7 @@ exports.map = map;
 exports.activateBaseLayer = activateBaseLayer;
 exports.restoreBaseLayer = restoreBaseLayer;
 exports.loadStyle = loadStyle;
+exports.validateStyle = validateStyle;
 exports.applyStyle = applyStyle;
 exports.mapcss = mapcss;
 exports.updateRenderer = updateRenderer;
