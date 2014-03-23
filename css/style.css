@@ -11,7 +11,7 @@ body {
 
 #panel {
     position: absolute;
-    top: 20px;
+    top: 0px;
     right: 0px;
     width: 280px;
 }
@@ -28,7 +28,7 @@ body {
 }
 
 #footer {
-    position: absolute;
+    position: fixed;
     bottom: 0px;
     left: 0px;
     right: 280px;
@@ -45,6 +45,7 @@ body {
 }
 
 .content {
+    margin-top: 20px;
     margin-left: 10px;
     padding: 0px 10px;
 }
@@ -131,10 +132,11 @@ div.field {
 
 select#style,button#apply {
     width: 100%;
+    font-size: 13px;
 }
 textarea#mapcss {
     width: 97%;
-    height: 177px;
+    height: 154px;
     margin-top: 3px;
     font-size: 10px;
     font-family: "Courier New", Courier, monospace;
