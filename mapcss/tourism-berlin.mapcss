@@ -1,0 +1,122 @@
+/*
+ * Tourism + Top 10 Attractions in Berlin
+ */
+
+node[tourism][tourism!=hotel] {
+  symbol-size: 6;
+  width: 2;
+  color: black;
+  opacity: 1;
+  fill-opacity: 1;
+  fill-color: orange;
+}
+
+node|z13-14[tourism][tourism!=hotel] {
+  symbol-size: 3;
+  width: 1;
+}
+node|z17-19[tourism][tourism!=hotel] {
+  symbol-size: 12;
+  fill-opacity: 0.2;
+}
+
+area[tourism][tourism!=hotel] {
+  width: 2;
+  color: black;
+  opacity: 1;
+  fill-opacity: 1;
+  fill-color: orange;
+}
+
+area|z13-14[tourism][tourism!=hotel] {
+  width: 1;
+}
+area|z17-19[tourism][tourism!=hotel] {
+  fill-opacity: 0.2;
+}
+
+node[tourism=viewpoint],
+area[tourism=viewpoint] {
+  fill-color: gold;
+}
+node[tourism=information],
+area[tourism=information] {
+  fill-color: #810051;
+}
+node[tourism=artwork],
+area[tourism=artwork] {
+  fill-color: #A66C00;
+}
+node[tourism=museum],
+area[tourism=museum] {
+  fill-color: #6D9C00;
+}
+
+
+/* 
+   http://www.visitberlin.de/de/artikel/die-top-10-sehenswuerdigkeiten-berlins 
+*/
+
+area[name=Reichstag],
+area[name=Fernsehturm],
+node[name=Gendarmenmarkt],
+area[name=Gendarmenmarkt], /* multipolygon */
+area[name=Schloss Charlottenburg],
+area[name=Museumsinsel],
+area[name=Gedenkstätte Berliner Mauer],
+node[name=Potsdamer Platz][tourism=attraction],
+node[name=Brandenburger Tor],
+area[name=Brandenburger Tor]
+{
+  symbol-size: 6;
+  width: 2;
+  color: black;
+  opacity: 1;
+  fill-opacity: 1;
+  fill-color: orangered;
+}
+
+area|z13-14[name=Reichstag],
+area|z13-14[name=Fernsehturm],
+node|z13-14[name=Gendarmenmarkt],
+area|z13-14[name=Gendarmenmarkt],
+area|z13-14[name=Schloss Charlottenburg],
+area|z13-14[name=Museumsinsel],
+area|z13-14[name=Gedenkstätte Berliner Mauer],
+node|z13-14[name=Potsdamer Platz][tourism=attraction],
+node|z13-14[name=Brandenburger Tor],
+area|z13-14[name=Brandenburger Tor]
+{
+  symbol-size: 3;
+  width: 1;
+}
+
+area|z17-19[name=Reichstag],
+area|z17-19[name=Fernsehturm],
+node|z17-19[name=Gendarmenmarkt],
+area|z17-19[name=Gendarmenmarkt],
+area|z17-19[name=Schloss Charlottenburg],
+area|z17-19[name=Museumsinsel],
+area|z17-19[name=Gedenkstätte Berliner Mauer],
+node|z17-19[name=Potsdamer Platz][tourism=attraction],
+node|z17-19[name=Brandenburger Tor],
+area|z17-19[name=Brandenburger Tor]
+{
+  symbol-size: 12;
+  fill-opacity: 0.4;
+}
+
+
+way[name=Unter den Linden],
+way[name=Kurfürstendamm]
+{
+  width: 6;
+  color: orangered;
+  opacity: 1;
+}
+
+way|z17-19[name=Unter den Linden],
+way|z17-19[name=Kurfürstendamm] {
+  width: 20;
+  opacity: 0.5;
+}
