@@ -10,7 +10,7 @@ body {
 }
 
 #panel {
-    position: fixed;
+    position: absolute;
     top: 20px;
     right: 0px;
     width: 280px;
@@ -22,13 +22,16 @@ body {
     left: 20px;
     right: 280px;
 }
+
 #panel {
-    height: 400px;
+    height: 100%;
 }
+
 #footer {
     position: absolute;
     bottom: 0px;
-    width: 100%;
+    left: 0px;
+    right: 280px;
     text-align: center;
     padding-top: 5px;
 }
