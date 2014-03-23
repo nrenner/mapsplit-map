@@ -2,7 +2,7 @@
  * Tourism + Top 10 Attractions in Berlin
  */
 
-node[tourism][tourism!=hotel] {
+node[tourism][tourism!=hotel][tourism!=hostel][tourism!=guest_house] {
   symbol-size: 6;
   width: 2;
   color: black;
@@ -11,16 +11,16 @@ node[tourism][tourism!=hotel] {
   fill-color: orange;
 }
 
-node|z13-14[tourism][tourism!=hotel] {
+node|z13-14[tourism][tourism!=hotel][tourism!=hostel][tourism!=guest_house] {
   symbol-size: 3;
   width: 1;
 }
-node|z17-19[tourism][tourism!=hotel] {
+node|z17-19[tourism][tourism!=hotel][tourism!=hostel][tourism!=guest_house] {
   symbol-size: 12;
   fill-opacity: 0.2;
 }
 
-area[tourism][tourism!=hotel] {
+area[tourism][tourism!=hotel][tourism!=hostel][tourism!=guest_house] {
   width: 2;
   color: black;
   opacity: 1;
@@ -28,10 +28,10 @@ area[tourism][tourism!=hotel] {
   fill-color: orange;
 }
 
-area|z13-14[tourism][tourism!=hotel] {
+area|z13-14[tourism][tourism!=hotel][tourism!=hostel][tourism!=guest_house] {
   width: 1;
 }
-area|z17-19[tourism][tourism!=hotel] {
+area|z17-19[tourism][tourism!=hotel][tourism!=hostel][tourism!=guest_house] {
   fill-opacity: 0.2;
 }
 
@@ -41,15 +41,17 @@ area[tourism=viewpoint] {
 }
 node[tourism=information],
 area[tourism=information] {
-  fill-color: #810051;
+  fill-color: #6D9C00;
 }
 node[tourism=artwork],
-area[tourism=artwork] {
-  fill-color: #A66C00;
+area[tourism=artwork],
+node[tourism=gallery],
+area[tourism=gallery] {
+  fill-color: #810051;
 }
 node[tourism=museum],
 area[tourism=museum] {
-  fill-color: #6D9C00;
+  fill-color: #A66C00;
 }
 
 
