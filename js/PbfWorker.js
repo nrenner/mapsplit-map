@@ -72,14 +72,13 @@ L.PbfWorker = L.AbstractWorker.extend({
                 }
             }, this), false);
 
-            // tile.datum invalid after call (is transferred to worker) 
-            //worker.postMessage({ url: tile.url, datum: tile.datum }, [tile.datum]);
             if (tile.datum) {
-                worker.postMessage({ buffer: tile.datum }, [tile.datum]);
+                // tile.datum invalid after call (is transferred to worker) 
+                worker.postMessage({ buffer: tile.datum, mapcss: tile.mapcss, mapZoom: tile.mapZoom }, [tile.datum]);
             } else {
                 this._log(tile, 'url');
                 tile._workerRequesting = true;
-                worker.postMessage({ url: tile.url });
+                worker.postMessage({ url: tile.url, mapcss: tile.mapcss, mapZoom: tile.mapZoom });
             }
         } else {
             callback(null, tile);

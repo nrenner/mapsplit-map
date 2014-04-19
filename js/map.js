@@ -16,17 +16,7 @@ require('./patch/Renderer.js');
 require('./patch/Canvas.js');
 require('./patch/Permalink.Layer.js');
 
-// extract MapCSS parser from Overpass Turbo, originally from iD
-// http://www.openstreetmap.org/user/tyr_asd/diary/19043
-//require('../bower_components/overpass-ide/js/jsmapcss/styleparser.js');
-window.styleparser = {};
-require('../bower_components/overpass-ide/js/jsmapcss/Condition.js');
-require('../bower_components/overpass-ide/js/jsmapcss/Rule.js');
-require('../bower_components/overpass-ide/js/jsmapcss/RuleChain.js');
-require('../bower_components/overpass-ide/js/jsmapcss/Style.js');
-require('../bower_components/overpass-ide/js/jsmapcss/StyleChooser.js');
-require('../bower_components/overpass-ide/js/jsmapcss/StyleList.js');
-require('../bower_components/overpass-ide/js/jsmapcss/RuleSet.js');
+require('./mapcss/jsmapcss.js');
 require('./MapCSS.js');
 var styleURLs = require('../mapcss/styles.js');
 
@@ -333,6 +323,12 @@ function init() {
     };
     
     vectorTileLayer = new L.TileLayer.Vector.Unclipped("tiles/{x}_{y}.pbf", tileOptions, vectorOptions);
+
+    // use tile to pass current MapCSS style and zoom to worker for pre-filtering
+    vectorTileLayer.on('tileloadstart', function(evt) {
+        evt.tile.mapcss = mapcss;
+        evt.tile.mapZoom = map.getZoom();
+    });
 
     // reduce memory by removing the parsed entities once added as vectors, 
     // this prevents caching though, see tileCacheFactory option
